@@ -45,11 +45,22 @@ conda activate biosharp
 ```
 
 ## Datasets
-- **High-resolution biomass:** [Eurasia](https://doi.org/10.5281/zenodo.7540824) (images `N50E014_agb.tif`, `N50E012_agb.tif`, `N48E014_agb.tif`, and `N48E012_agb.tif` for the samller experiments on the AOI), [Africa](https://doi.org/10.5281/zenodo.4725667), [North America N](https://doi.org/10.5281/zenodo.7550809), [North America S](https://doi.org/10.5281/zenodo.7550246), [South America N](https://zenodo.org/records/7544238), [South America S](https://doi.org/10.5281/zenodo.8334607), [North Asia N](https://doi.org/10.5281/zenodo.7584224), [North Asia S](https://doi.org/10.5281/zenodo.7584753), [South Asia](https://doi.org/10.5281/zenodo.7545054)
-- **Low-resolution biomass:** [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e) (image `N50E010_ESACCI-BIOMASS-L4-AGB-MERGED-100m-2010-fv4.0.tif` for the samller experiments on the AOI)
-- **High-resolution multispectral data:** Product `COPERNICUS/S2_SR_HARMONIZED` from GEE.
+### High-resolution biomass
+- [Eurasia](https://doi.org/10.5281/zenodo.7540824) (images `N50E014_agb.tif`, `N50E012_agb.tif`, `N48E014_agb.tif`, and `N48E012_agb.tif` for the samller experiments on the AOI)
+- [Africa](https://doi.org/10.5281/zenodo.4725667)
+- [North America N](https://doi.org/10.5281/zenodo.7550809)
+- [North America S](https://doi.org/10.5281/zenodo.7550246)
+- [South America N](https://zenodo.org/records/7544238)
+- [South America S](https://doi.org/10.5281/zenodo.8334607)
+- [North Asia N](https://doi.org/10.5281/zenodo.7584224)
+- [North Asia S](https://doi.org/10.5281/zenodo.7584753)
+- [South Asia](https://doi.org/10.5281/zenodo.7545054)
 
-For the smaller experiments in the AOI, you can use the following JAVA code to download the Sentinel-2 data from GEE:
+### Low-resolution biomass
+For the low-resolution biomass data we utilized the data from 2010 from the dataset [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e) with a resolution of 100 meters. In particular, for the samller experiments on the AOI, we used the image `N50E010_ESACCI-BIOMASS-L4-AGB-MERGED-100m-2010-fv4.0.tif`.
+
+### High-resolution multispectral data
+For the multispectral optical data, we utilized Google Earth Engine ([GEE](https://code.earthengine.google.com/)) to access Sentinel-2 satellite imagery from the years 2017-2019. However, for the particular case of the small experiments on the AOI, we only used data from 2017, since with this we already covered the AOI. For the smaller experiments in the AOI, you can use the following JAVA code to download the Sentinel-2 data from GEE:
 
 ```JAVA
 var S2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
