@@ -1,0 +1,61 @@
+[project]
+name = "biosharp"
+description = ""
+version = "0.0.1"
+authors = [
+    { name = "Laia Albors Zumel", email = "laia.albors@upc.edu" }
+]
+readme = "README.md"
+dependencies = [
+    "datasets",
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "transformers",
+    "accelerate",
+    "opencv-python",
+    "librosa",
+    "numpy",
+    "scipy",
+    "pandas",
+    "omegaconf",
+    "sentencepiece",
+    "sacremoses",
+    "sacrebleu",
+    "wandb",
+    "nltk",
+    "jiwer",
+    "Pillow",
+    "evaluate",
+    "signwriting @ git+https://github.com/sign-language-processing/signwriting",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pylint",
+    "black",
+    "isort",
+    "pre-commit",
+    "jupyter"
+]
+
+[tool.yapf]
+based_on_style = "google"
+column_limit = 120
+
+[tool.pylint]
+max-line-length = 120
+disable = [
+    "C0114", # Missing module docstring
+    "C0115", # Missing class docstring
+    "C0116", # Missing function or method docstring
+    "C0301", # Line too long
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.pytest.ini_options]
+addopts = "-v"
+testpaths = ["tests"]  # This specifies the directory to look for tests
