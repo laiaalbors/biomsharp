@@ -1,4 +1,17 @@
+import torch
+import random
+import numpy as np
 
+"""
+This code is adapted from the BasicSR library (version 1.3.4.9), available at:
+https://pypi.org/project/basicsr/1.3.4.9/
+
+Original code was designed to handle paired random cropping for high-quality (GT) and low-quality (LQ) images 
+in super-resolution tasks. 
+This adapted version extends the functionality to include a third type of image (guide, GD), allowing for 
+triplet random cropping of GT, LQ, and GD images with corresponding locations. 
+This modification maintains support for both Numpy arrays and PyTorch tensors.
+"""
 
 
 def triplet_random_crop(img_gts, img_lqs, img_gds, gt_patch_size, scale, gt_path=None):
