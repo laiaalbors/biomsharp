@@ -54,7 +54,7 @@ class BIOSHARP(nn.Module):
         self.conv_after_concat = nn.Conv2d(embed_dim * 2, embed_dim, kernel_size=3, stride=1, padding=1)
 
     
-    def forward(self, biomass, optical, is_train=True, is_tile=False):
+    def forward(self, biomass, optical):
         # Normalize biomass
         mean_biomass = self.mean.type_as(biomass)
         biomass = (biomass - mean_biomass) * self.img_range
