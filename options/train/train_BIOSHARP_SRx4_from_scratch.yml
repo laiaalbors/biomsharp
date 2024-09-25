@@ -16,7 +16,7 @@ datasets:
     type: TripletImageDataset
     dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/train
     dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/train
-    dataroot_op: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_25m_sub/train  # 2010_sentinel_B5_B6_B7_B8A_25m_sub / 2010_sentinel_B11_B8_B2_B4_25m_sub / 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub / 2010_sentinel_Ball_25m_sub / 2010_sentinel_B8_B4_25m_sub
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_25m_sub/train  # 2010_sentinel_B5_B6_B7_B8A_25m_sub / 2010_sentinel_B11_B8_B2_B4_25m_sub / 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub / 2010_sentinel_Ball_25m_sub / 2010_sentinel_B8_B4_25m_sub
     meta_info_file: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/BIOSHARP/HAT/hat/data/meta_info/meta_info_europe-small-25m_GT.txt
     io_backend:
       type: disk
@@ -37,7 +37,7 @@ datasets:
     type: TripletImageDataset
     dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/validation
     dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/validation
-    dataroot_op: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_25m_sub/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_25m_sub/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
     io_backend:
       type: disk
 
