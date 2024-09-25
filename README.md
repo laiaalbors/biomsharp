@@ -24,10 +24,10 @@ However, while global satellites provide broad environmental assessments, they l
 
 
 ## Model Architecture
-![Model Architecture](biosharp_bigger.png)  
+![Model Architecture](figures/biosharp_bigger.png)  
 
 HAT's Deep Feature Extractor from [here](https://arxiv.org/abs/2205.04437):
-![Model Architecture](hat_layers.png)  
+![Model Architecture](figures/hat_layers.png)  
 
 ## Installation
 To set up the environment for BioSHARP, you'll need the following dependencies:
