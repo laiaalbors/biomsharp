@@ -1,3 +1,5 @@
+from .data_utils import *
+
 import importlib
 from os import path as osp
 

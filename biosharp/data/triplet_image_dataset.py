@@ -5,7 +5,7 @@ from basicsr.utils import img2tensor, FileClient # TODO: vaig haver de canviar u
 from basicsr.data.transforms import augment
 from basicsr.utils.registry import DATASET_REGISTRY
 
-from biosharp.data.data_utils import triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
+from biosharp.data import triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
 
 
 @DATASET_REGISTRY.register()
