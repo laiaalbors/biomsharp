@@ -7,36 +7,15 @@ authors = [
 ]
 readme = "README.md"
 dependencies = [
-    "datasets",
-    "torch",
+    "torch==2.2.1",
     "torchvision",
-    "torchaudio",
-    "transformers",
-    "accelerate",
-    "opencv-python",
-    "librosa",
-    "numpy",
-    "scipy",
-    "pandas",
-    "omegaconf",
-    "sentencepiece",
-    "sacremoses",
-    "sacrebleu",
-    "wandb",
-    "nltk",
-    "jiwer",
-    "Pillow",
-    "evaluate",
-    "signwriting @ git+https://github.com/sign-language-processing/signwriting",
+    "einops",
+    "basicsr==1.3.4.9",
+    "HAT @ git+https://github.com/XPixelGroup/HAT.git"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pylint",
-    "black",
-    "isort",
-    "pre-commit",
     "jupyter"
 ]
 
