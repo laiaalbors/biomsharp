@@ -5,7 +5,8 @@ from basicsr.utils import img2tensor, FileClient # TODO: vaig haver de canviar u
 from basicsr.data.transforms import augment
 from basicsr.utils.registry import DATASET_REGISTRY
 
-from biosharp.data import triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
+from biosharp.data import augment, triplet_random_crop, triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
+from biosharp.utils import imfrompath, img2tensor
 
 
 @DATASET_REGISTRY.register()
@@ -84,7 +85,7 @@ class TripletImageDataset(data.Dataset):
         img_lq = imfrompath(lq_path, float32=True)
         # GD
         gd_path = self.paths[index]['gd_path']
-        img_gd = imfrompath(gd_path, float32=True, bands=self.bands)
+        img_gd = imfrompath(gd_path, float32=True, biomass=False)
 
         # augmentation for training
         if self.opt['phase'] == 'train':
