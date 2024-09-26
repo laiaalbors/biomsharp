@@ -44,7 +44,7 @@ class BIOSHARP(nn.Module):
         # biomass first transpose convolutions
         self.conv_first_biomass = nn.Sequential(
             nn.ConvTranspose2d(in_chans, embed_dim, 4, stride=2, padding=1, output_padding=0),
-            nn.ConvTranspose2d(embed_dim, embed_dim, 4, stride=2, padding=1, output_padding=0) if scale == 4 else nn.Identity()
+            nn.ConvTranspose2d(embed_dim, embed_dim, 4, stride=2, padding=1, output_padding=0) if upscale == 4 else nn.Identity()
         )
 
         # optical first convolutions
@@ -55,13 +55,16 @@ class BIOSHARP(nn.Module):
 
     
     def forward(self, biomass, optical):
-        # Normalize biomass
-        mean_biomass = self.mean.type_as(biomass)
-        biomass = (biomass - mean_biomass) * self.img_range
+        # # Normalize biomass
+        # mean_biomass = self.mean.type_as(biomass)
+        # biomass = (biomass - mean_biomass) * self.img_range
         
-        # Normalize optocal data
-        mean_optical = self.mean.type_as(optical)
-        optical = (optical - mean_optical) * self.img_range
+        # # Normalize optocal data
+        # mean_optical = self.mean.type_as(optical)
+        # optical = (optical - mean_optical) * self.img_range
+
+        print("biomass:", biomass.shape)
+        print("optical:", optical.shape)
 
         # Shallow Feature Extraction
         biomass_output = self.conv_first_biomass(biomass)
@@ -76,6 +79,6 @@ class BIOSHARP(nn.Module):
         x = self.hat.conv_before_upsample(x)
         x = self.hat.conv_last(x)
 
-        x = x / self.img_range + mean_biomass
+        # x = x / self.img_range + mean_biomass
 
         return x
