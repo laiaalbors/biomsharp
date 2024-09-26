@@ -11,7 +11,8 @@ dependencies = [
     "torchvision",
     "einops",
     "basicsr==1.3.4.9",
-    "HAT @ git+https://github.com/XPixelGroup/HAT.git"
+    "HAT @ git+https://github.com/XPixelGroup/HAT.git",
+    "wandb==0.16.6"
 ]
 
 [project.optional-dependencies]
