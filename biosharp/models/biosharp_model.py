@@ -26,20 +26,20 @@ class BIOSHARPModel(SRModel):
         self.img = F.pad(self.lq, (0, self.mod_pad_w, 0, self.mod_pad_h), 'reflect')
         
         # guide
-        _, _, h_op, w_op = self.op.size()
+        _, _, h_op, w_op = self.gd.size()
         self.mod_pad_h_op, self.mod_pad_w_op = self.mod_pad_h * h_op // h, self.mod_pad_w * w_op // w
-        self.op = F.pad(self.op, (0, self.mod_pad_w_op, 0, self.mod_pad_h_op), 'reflect')
+        self.gd = F.pad(self.gd, (0, self.mod_pad_w_op, 0, self.mod_pad_h_op), 'reflect')
 
     def process(self):
         # model inference
         if hasattr(self, 'net_g_ema'):
             self.net_g_ema.eval()
             with torch.no_grad():
-                self.output = self.net_g_ema(self.img, self.op)
+                self.output = self.net_g_ema(self.img, self.gd)
         else:
             self.net_g.eval()
             with torch.no_grad():
-                self.output = self.net_g(self.img, self.op)
+                self.output = self.net_g(self.img, self.gd)
             # self.net_g.train()
 
     def tile_process(self):
@@ -48,7 +48,7 @@ class BIOSHARPModel(SRModel):
         Modified from: https://github.com/ata4/esrgan-launcher
         """
         batch, channel, height, width = self.img.shape # biomass
-        _, channel_optical, height_optical, width_optical = self.op.shape # guide
+        _, channel_optical, height_optical, width_optical = self.gd.shape # guide
         scale_optical = self.scale #round(height_optical / height) # height_guide // height
         output_height = height * self.scale
         output_width = width * self.scale
@@ -82,7 +82,7 @@ class BIOSHARPModel(SRModel):
                 input_tile_height = input_end_y - input_start_y
                 tile_idx = y * tiles_x + x + 1
                 input_tile = self.img[:, :, input_start_y_pad:input_end_y_pad, input_start_x_pad:input_end_x_pad]
-                optical_tile = self.op[:, :, input_start_y_pad*scale_optical:input_end_y_pad*scale_optical, input_start_x_pad*scale_optical:input_end_x_pad*scale_optical]
+                optical_tile = self.gd[:, :, input_start_y_pad*scale_optical:input_end_y_pad*scale_optical, input_start_x_pad*scale_optical:input_end_x_pad*scale_optical]
 
                 # upscale tile
                 try:
@@ -120,13 +120,13 @@ class BIOSHARPModel(SRModel):
 
     def feed_data(self, data):
         self.lq = data['lq'].to(self.device)
-        self.op = data['op'].to(self.device)
+        self.gd = data['gd'].to(self.device)
         if 'gt' in data:
             self.gt = data['gt'].to(self.device)
 
     def optimize_parameters(self, current_iter):
         self.optimizer_g.zero_grad()
-        self.output = self.net_g(self.lq, self.op)
+        self.output = self.net_g(self.lq, self.gd)
 
         l_total = 0
         loss_dict = OrderedDict()
@@ -157,11 +157,11 @@ class BIOSHARPModel(SRModel):
         if hasattr(self, 'net_g_ema'):
             self.net_g_ema.eval()
             with torch.no_grad():
-                self.output = self.net_g_ema(self.lq, self.op)
+                self.output = self.net_g_ema(self.lq, self.gd)
         else:
             self.net_g.eval()
             with torch.no_grad():
-                self.output = self.net_g(self.lq, self.op)
+                self.output = self.net_g(self.lq, self.gd)
             self.net_g.train()
 
     def nondist_validation(self, dataloader, current_iter, tb_logger, save_img):
@@ -203,7 +203,7 @@ class BIOSHARPModel(SRModel):
             
             # tentative for out of GPU memory
             del self.lq
-            del self.op
+            del self.gd
             del self.output
             torch.cuda.empty_cache()
 
