@@ -1,4 +1,4 @@
-from .data_utils import *
+from .data_util import *
 
 import importlib
 from os import path as osp
