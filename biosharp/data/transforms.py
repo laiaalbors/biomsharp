@@ -6,11 +6,16 @@ import numpy as np
 This code is adapted from the BasicSR library (version 1.3.4.9), available at:
 https://pypi.org/project/basicsr/1.3.4.9/
 
+triplet_random_crop():
 Original code was designed to handle paired random cropping for high-quality (GT) and low-quality (LQ) images 
 in super-resolution tasks. 
 This adapted version extends the functionality to include a third type of image (guide, GD), allowing for 
 triplet random cropping of GT, LQ, and GD images with corresponding locations. 
 This modification maintains support for both Numpy arrays and PyTorch tensors.
+
+augment():
+Original code was design to handle normal images with 1, 3 or 4 channels.
+This adaptation works with images with any number of channels (like Sentinel-2 images).
 """
 
 
@@ -96,3 +101,70 @@ def triplet_random_crop(img_gts, img_lqs, img_gds, gt_patch_size, scale, gt_path
     if len(img_gds) == 1:
         img_gds = img_gds[0]
     return img_gts, img_lqs, img_gds
+
+
+def augment(imgs, hflip=True, rotation=True, flows=None, return_status=False):
+    """Augment: horizontal flips OR rotate (0, 90, 180, 270 degrees).
+
+    We use vertical flip and transpose for rotation implementation.
+    All the images in the list use the same augmentation.
+
+    Args:
+        imgs (list[ndarray] | ndarray): Images to be augmented. If the input
+            is an ndarray, it will be transformed to a list.
+        hflip (bool): Horizontal flip. Default: True.
+        rotation (bool): Ratotation. Default: True.
+        flows (list[ndarray]: Flows to be augmented. If the input is an
+            ndarray, it will be transformed to a list.
+            Dimension is (h, w, 2). Default: None.
+        return_status (bool): Return the status of flip and rotation.
+            Default: False.
+
+    Returns:
+        list[ndarray] | ndarray: Augmented images and flows. If returned
+            results only have one element, just return ndarray.
+
+    """
+    hflip = hflip and random.random() < 0.5
+    vflip = rotation and random.random() < 0.5
+    rot90 = rotation and random.random() < 0.5
+
+    def _augment(img):
+        if hflip:  # horizontal
+            img = np.flip(img, axis=1)
+        if vflip:  # vertical
+            img = np.flip(img, axis=0)
+        if rot90:
+            img = img.transpose(1, 0, 2)
+        return img
+
+    def _augment_flow(flow):
+        if hflip:  # horizontal
+            flow = np.flip(flow, axis=1)
+            flow[:, :, 0] *= -1
+        if vflip:  # vertical
+            flow = np.flip(flow, axis=0)
+            flow[:, :, 1] *= -1
+        if rot90:
+            flow = flow.transpose(1, 0, 2)
+            flow = flow[:, :, [1, 0]]
+        return flow
+
+    if not isinstance(imgs, list):
+        imgs = [imgs]
+    imgs = [_augment(img) for img in imgs]
+    if len(imgs) == 1:
+        imgs = imgs[0]
+
+    if flows is not None:
+        if not isinstance(flows, list):
+            flows = [flows]
+        flows = [_augment_flow(flow) for flow in flows]
+        if len(flows) == 1:
+            flows = flows[0]
+        return imgs, flows
+    else:
+        if return_status:
+            return imgs, (hflip, vflip, rot90)
+        else:
+            return imgs
