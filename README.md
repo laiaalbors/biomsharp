@@ -40,8 +40,10 @@ To set up the environment for BioSHARP, you'll need the following dependencies:
 You can create the environment using the provided `environment.yml` file by running:
 
 ```bash
-conda env create -f environment.yml
+conda create -n biosharp python=3.8.18
 conda activate biosharp
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install .
 ```
 
 ## Datasets
