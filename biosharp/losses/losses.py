@@ -2,9 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from basicsr.utils.registry import LOSS_REGISTRY
+
 from biosharp.archs import get_Fre, Get_gradient_nopadding_d
 
 
+@LOSS_REGISTRY.register()
 class SGNetLoss(nn.Module):
     """
     Custom loss for SGNet, which includes spatial loss (L1), frequency amplitude loss,
@@ -33,18 +36,15 @@ class SGNetLoss(nn.Module):
         # You can use torch's built-in L1Loss for simplicity
         self.l1_loss = nn.L1Loss(reduction=reduction)
 
-    def forward(self, pred, target, guidance, lr, net, **kwargs):
+    def forward(self, out, out_grad, target, **kwargs):
         """
         Args:
-            pred (Tensor): Predicted tensor.
+            out (Tensor): Predicted tensor.
+            out_grad (Tensor): Predicted gradient of the output tensor, 
+                               used for comparing with the ground truth 
+                               gradient to sharpen the depth structure.
             target (Tensor): Ground truth tensor.
-            guidance (Tensor): Guidance tensor for input to the net.
-            lr (Tensor): Low-resolution input for the net.
-            net (nn.Module): The network model used to compute auxiliary outputs.
         """
-
-        # Get the main outputs and gradient from the network
-        out, out_grad = net((guidance, lr))
 
         # Compute frequency domain outputs (amplitude and phase)
         out_amp, out_pha = self.net_getFre(out)
