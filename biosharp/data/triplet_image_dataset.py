@@ -49,8 +49,7 @@ class TripletImageDataset(data.Dataset):
         self.std = opt['std'] if 'std' in opt else None
         self.mean_gd = opt['mean_gd'] if 'mean_gd' in opt else None
         self.std_gd = opt['std_gd'] if 'std_gd' in opt else None
-        # TODO: Afegir "sentinel_bands" al fitxer de configuració
-        self.bands = eval(opt['sentinel_bands']) if 'sentinel_bands' in opt else ["04", "03", "02"] # RGB
+        self.guide_data = opt['guide_data'] # sentinel2 or landsat5
 
         self.gt_folder, self.lq_folder, self.gd_folder = opt['dataroot_gt'], opt['dataroot_lq'], opt['dataroot_gd']
         if 'filename_tmpl' in opt:
@@ -84,7 +83,7 @@ class TripletImageDataset(data.Dataset):
         img_lq = imfrompath(lq_path, float32=True)
         # GD
         gd_path = self.paths[index]['gd_path']
-        img_gd = imfrompath(gd_path, float32=True, biomass=False)
+        img_gd = imfrompath(gd_path, float32=True, guide_data=self.guide_data)
 
         # augmentation for training
         if self.opt['phase'] == 'train':
