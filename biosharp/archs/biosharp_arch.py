@@ -13,7 +13,7 @@ from basicsr.utils.registry import ARCH_REGISTRY
 @ARCH_REGISTRY.register()
 class BIOSHARP(nn.Module):
     def __init__(self,
-                 sentinel_channels=3,
+                 guide_channels=3,
                  img_size=64,
                  patch_size=1,
                  in_chans=3,

@@ -1,6 +1,5 @@
 import numpy as np
 import scipy.linalg
-import thops
 
 import torch
 import torch.nn as nn
@@ -9,6 +8,9 @@ import torch.nn.functional as F
 from torchvision import transforms
 
 from basicsr.utils.registry import ARCH_REGISTRY
+
+from biosharp.utils import pixels as thops_pixels
+from biosharp.utils import sum as thops_sum
 
 
 """
@@ -50,7 +52,7 @@ class InvertibleConv1x1(nn.Module):
     def get_weight(self, input, reverse):
         w_shape = self.w_shape
         if not self.LU:
-            pixels = thops.pixels(input)
+            pixels = thops_pixels(input)
             dlogdet = torch.slogdet(self.weight)[1] * pixels
             if not reverse:
                 weight = self.weight.view(w_shape[0], w_shape[1], 1, 1)
@@ -65,7 +67,7 @@ class InvertibleConv1x1(nn.Module):
             self.eye = self.eye.to(input.device)
             l = self.l * self.l_mask + self.eye
             u = self.u * self.l_mask.transpose(0, 1).contiguous() + torch.diag(self.sign_s * torch.exp(self.log_s))
-            dlogdet = thops.sum(self.log_s) * thops.pixels(input)
+            dlogdet = thops_sum(self.log_s) * thops_pixels(input)
             if not reverse:
                 w = torch.matmul(self.p, torch.matmul(l, u))
             else:
@@ -640,9 +642,9 @@ class GCM(nn.Module):
 
 @ARCH_REGISTRY.register()
 class SGNet(nn.Module):
-    def __init__(self, num_feats, kernel_size, scale):
+    def __init__(self, guide_channels, num_feats, kernel_size, scale):
         super(SGNet, self).__init__()
-        self.conv_rgb1 = nn.Conv2d(in_channels=3, out_channels=num_feats,
+        self.conv_rgb1 = nn.Conv2d(in_channels=guide_channels, out_channels=num_feats,
                                    kernel_size=kernel_size, padding=1)
         self.rgb_rb2 = ResBlock(default_conv, num_feats, kernel_size, bias=True, bn=False,
                                 act=nn.LeakyReLU(negative_slope=0.2, inplace=True), res_scale=1)
