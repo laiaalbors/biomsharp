@@ -1,5 +1,9 @@
 import torch
 import torch.nn as nn
+from torchvision.transforms import functional
+import sys
+
+sys.modules["torchvision.transforms.functional_tensor"] = functional
 
 from hat.archs.hat_arch import HAT
 
@@ -62,9 +66,6 @@ class BIOSHARP(nn.Module):
         # # Normalize optocal data
         # mean_optical = self.mean.type_as(optical)
         # optical = (optical - mean_optical) * self.img_range
-
-        print("biomass:", biomass.shape)
-        print("optical:", optical.shape)
 
         # Shallow Feature Extraction
         biomass_output = self.conv_first_biomass(biomass)
