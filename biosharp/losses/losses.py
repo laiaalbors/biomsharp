@@ -63,4 +63,4 @@ class SGNetLoss(nn.Module):
         # Total loss
         total_loss = loss_spa + 0.002 * loss_fre + 0.001 * loss_grad1
 
-        return total_loss, out
+        return total_loss

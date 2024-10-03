@@ -77,6 +77,7 @@ class SGNetModel(SRModel):
         Finally, all the processed tiles are merged into one images.
         Modified from: https://github.com/ata4/esrgan-launcher
         """
+        self.scale = self.opt.get('scale', 1)
         batch, channel, height, width = self.lq.shape # biomass
         _, channel_optical, height_optical, width_optical = self.gd.shape # guide
         scale_optical = self.scale #round(height_optical / height) # height_guide // height
