@@ -5,14 +5,8 @@ from basicsr.metrics.metric_util import reorder_image, to_y_channel
 from basicsr.utils.registry import METRIC_REGISTRY
 
 
-def overwrite_registration(registry, obj):
-    name = obj.__name__
-    if name in registry:
-        del registry._obj_map[name]  # Remove the old registration
-    registry.register(obj)
-
-
-def calculate_psnr(img, img2, crop_border, input_order='HWC', test_y_channel=False, **kwargs):
+@METRIC_REGISTRY.register()
+def calculate_psnr_biomass(img, img2, crop_border, input_order='HWC', test_y_channel=False, **kwargs):
     """Calculate PSNR (Peak Signal-to-Noise Ratio).
 
     Ref: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
@@ -51,8 +45,6 @@ def calculate_psnr(img, img2, crop_border, input_order='HWC', test_y_channel=Fal
         return float('inf')
     return 20. * np.log10(563. / np.sqrt(mse))
 
-overwrite_registration(METRIC_REGISTRY, calculate_psnr)
-
 
 def _ssim(img, img2):
     """Calculate SSIM (structural similarity) for one channel images.
@@ -88,7 +80,8 @@ def _ssim(img, img2):
     return ssim_map.mean()
 
 
-def calculate_ssim(img, img2, crop_border, input_order='HWC', test_y_channel=False, **kwargs):
+@METRIC_REGISTRY.register()
+def calculate_ssim_biomass(img, img2, crop_border, input_order='HWC', test_y_channel=False, **kwargs):
     """Calculate SSIM (structural similarity).
 
     Ref:
@@ -133,8 +126,6 @@ def calculate_ssim(img, img2, crop_border, input_order='HWC', test_y_channel=Fal
     for i in range(img.shape[2]):
         ssims.append(_ssim(img[..., i], img2[..., i]))
     return np.array(ssims).mean()
-
-overwrite_registration(METRIC_REGISTRY, calculate_ssim)
 
 
 @METRIC_REGISTRY.register()
