@@ -52,7 +52,7 @@ class BIOSHARP(nn.Module):
         )
 
         # optical first convolutions
-        self.conv_first_optical = nn.Conv2d(sentinel_channels, embed_dim, kernel_size=3, stride=1, padding=1)
+        self.conv_first_optical = nn.Conv2d(guide_channels, embed_dim, kernel_size=3, stride=1, padding=1)
 
         # Define CNN layer to process the concatenated output
         self.conv_after_concat = nn.Conv2d(embed_dim * 2, embed_dim, kernel_size=3, stride=1, padding=1)
