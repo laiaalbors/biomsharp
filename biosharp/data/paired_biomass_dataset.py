@@ -106,7 +106,7 @@ class PairedBiomassDataset(data.Dataset):
             img_gt = img_gt[0:img_lq.shape[0] * scale, 0:img_lq.shape[1] * scale, :]
 
         # BGR to RGB, HWC to CHW, numpy to tensor
-        img_gt, img_lq = img2tensor([img_gt, img_lq], bgr2rgb=True, float32=True)
+        img_gt, img_lq = img2tensor([img_gt, img_lq], bgr2rgb=False, float32=True)
         # normalize
         if self.mean is not None or self.std is not None:
             normalize(img_lq, self.mean, self.std, inplace=True)
