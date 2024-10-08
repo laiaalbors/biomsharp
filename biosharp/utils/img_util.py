@@ -110,7 +110,7 @@ def imfrompath(content_path, float32=True, guide_data="biomass"):
     Returns:
         ndarray: Loaded image array.
     """
-    allowed_types = {"biomass", "sentinel2", "landsat5"}
+    allowed_types = {"biomass", "sentinel2", "landsat5", "none"}
     assert guide_data in allowed_types, f"Invalid data_type: {guide_data}. Must be one of {allowed_types}."
     
     # read raster
@@ -122,7 +122,8 @@ def imfrompath(content_path, float32=True, guide_data="biomass"):
     guide_ranges = {
         "biomass": (0., 563.),
         "sentinel2": (1., 10000.),
-        "landsat5": (0., 1.)
+        "landsat5": (0., 1.),
+        "none": (np.min(img), np.max(img))
     }
     min_value, max_value = guide_ranges.get(guide_data, (None, None))
 
@@ -131,8 +132,9 @@ def imfrompath(content_path, float32=True, guide_data="biomass"):
         img = np.expand_dims(img, axis=-1)
     
     if float32:
-        img = np.clip(img, a_min=min_value, a_max=max_value)
-        img = (img - min_value) / (max_value - min_value) # normalize values
+        if guide_data != "none":
+            img = np.clip(img, a_min=min_value, a_max=max_value)
+            img = (img - min_value) / (max_value - min_value) # normalize values
         img = img.astype(np.float32)
         
     return img
