@@ -103,6 +103,54 @@ def triplet_random_crop(img_gts, img_lqs, img_gds, gt_patch_size, scale, gt_path
     return img_gts, img_lqs, img_gds
 
 
+def random_crop_img(imgs, patch_size):
+    """Random crop for a single image. Supports both Numpy arrays and Tensors.
+
+    It crops the image to the specified patch size.
+
+    Args:
+        img (list[ndarray] | ndarray | list[Tensor] | Tensor): The input image. If the input is an ndarray,
+            it will be transformed to a list containing itself.
+        patch_size (int): The size of the crop patch.
+
+    Returns:
+        ndarray | Tensor: The cropped image.
+    """
+
+    # Ensure img is a list for consistent processing
+    if not isinstance(imgs, list):
+        imgs = [imgs]
+
+    # Determine the input type (Numpy array or Tensor)
+    input_type = 'Tensor' if torch.is_tensor(imgs[0]) else 'Numpy'
+
+    # Get image dimensions
+    if input_type == 'Tensor':
+        h, w = imgs[0].size()[-2:]
+    else:
+        h, w = imgs[0].shape[0:2]
+
+    # Check if the image size is smaller than the patch size
+    if h < patch_size or w < patch_size:
+        raise ValueError(f'Image ({h}, {w}) is smaller than the patch size ({patch_size}, {patch_size}).')
+
+    # Randomly choose top and left coordinates for the patch
+    top = random.randint(0, h - patch_size)
+    left = random.randint(0, w - patch_size)
+
+    # Crop the patch
+    if input_type == 'Tensor':
+        cropped_imgs = [v[:, :, top:top + patch_size, left:left + patch_size] for v in imgs]
+    else:
+        cropped_imgs = [v[top:top + patch_size, left:left + patch_size, ...] for v in imgs]
+
+    # Return the cropped image directly if there’s only one element
+    if len(cropped_imgs) == 1:
+        cropped_imgs = cropped_imgs[0]
+
+    return cropped_imgs
+
+
 def augment(imgs, hflip=True, rotation=True, flows=None, return_status=False):
     """Augment: horizontal flips OR rotate (0, 90, 180, 270 degrees).
 
