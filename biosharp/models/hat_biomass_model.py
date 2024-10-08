@@ -38,7 +38,7 @@ class HATBiomassModel(SRModel):
             self.net_g.eval()
             with torch.no_grad():
                 self.output = self.net_g(self.img)
-            # self.net_g.train()
+            self.net_g.train()
 
     def tile_process(self):
         """It will first crop input images to tiles, and then process each tile.
@@ -108,6 +108,7 @@ class HATBiomassModel(SRModel):
                 self.output[:, :, output_start_y:output_end_y,
                             output_start_x:output_end_x] = output_tile[:, :, output_start_y_tile:output_end_y_tile,
                                                                        output_start_x_tile:output_end_x_tile]
+        self.net_g.train()
 
     def post_process(self):
         _, _, h, w = self.output.size()

@@ -41,7 +41,7 @@ class SGNetModel(SRModel):
 
         # define losses
         if train_opt.get('pixel_opt'):
-            if train_opt['pixel_opt'] == "SGNetLoss":
+            if train_opt['pixel_opt']['type'] == "SGNetLoss":
                 self.cri_pix = build_other_loss(train_opt['pixel_opt']).to(self.device)
             else:
                 self.cri_pix = build_loss(train_opt['pixel_opt']).to(self.device)
@@ -70,7 +70,7 @@ class SGNetModel(SRModel):
             self.net_g.eval()
             with torch.no_grad():
                 self.output, self.out_grad = self.net_g((self.gd, self.lq))
-            # self.net_g.train()
+            self.net_g.train()
 
     def tile_process(self):
         """It will first crop input images to tiles, and then process each tile.
@@ -148,6 +148,7 @@ class SGNetModel(SRModel):
                 self.out_grad[:, :, output_start_y:output_end_y,
                               output_start_x:output_end_x] = out_grad_tile[:, :, output_start_y_tile:output_end_y_tile,
                                                                            output_start_x_tile:output_end_x_tile]
+        self.net_g.train()
 
     def feed_data(self, data):
         self.lq = data['lq'].to(self.device)
