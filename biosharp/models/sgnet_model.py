@@ -8,6 +8,7 @@ from torch.nn import functional as F
 
 from basicsr.archs import build_network
 from basicsr.losses import build_loss
+from basicsr.models import lr_scheduler as lr_scheduler
 from basicsr.models.sr_model import SRModel
 from basicsr.utils import imwrite, get_root_logger
 from basicsr.utils.registry import MODEL_REGISTRY
@@ -59,6 +60,22 @@ class SGNetModel(SRModel):
         # set up optimizers and schedulers
         self.setup_optimizers()
         self.setup_schedulers()
+    
+    def setup_schedulers(self):
+        """Set up schedulers."""
+        train_opt = self.opt['train']
+        scheduler_type = train_opt['scheduler'].pop('type')
+        if scheduler_type in ['MultiStepLR', 'MultiStepRestartLR']:
+            for optimizer in self.optimizers:
+                self.schedulers.append(lr_scheduler.MultiStepRestartLR(optimizer, **train_opt['scheduler']))
+        elif scheduler_type == 'CosineAnnealingRestartLR':
+            for optimizer in self.optimizers:
+                self.schedulers.append(lr_scheduler.CosineAnnealingRestartLR(optimizer, **train_opt['scheduler']))
+        elif scheduler_type == 'ExponentialLR':
+            for optimizer in self.optimizers:
+                self.schedulers.append(torch.optim.lr_scheduler.ExponentialLR(optimizer, **train_opt['scheduler']))
+        else:
+            raise NotImplementedError(f'Scheduler {scheduler_type} is not implemented yet.')
     
     def process(self):
         # model inference
