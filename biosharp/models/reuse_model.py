@@ -196,10 +196,10 @@ class ReUseModel(SRModel):
                 self.process()
 
             visuals = self.get_current_visuals()
-            sr_img = tensor2img([visuals['result']]) # , min_max=(0, 563)
+            sr_img = tensor2img([visuals['result']], min_max=(0, 563)) # , min_max=(0, 563)
             metric_data['img'] = sr_img
             if 'gt' in visuals:
-                gt_img = tensor2img([visuals['gt']]) # , min_max=(0, 563)
+                gt_img = tensor2img([visuals['gt']], min_max=(0, 563)) # , min_max=(0, 563)
                 metric_data['img2'] = gt_img
                 del self.gt
 

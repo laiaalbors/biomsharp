@@ -184,7 +184,7 @@ class PairedOpticalBiomassDataset(data.Dataset):
         # Load gt and gd images. Dimension order: HWC; channel order: BGR;
         # image range: [0, 1], float32.
         gt_path = self.paths[index]['gt_path']
-        img_gt = imfrompath(gt_path, float32=True) #, guide_data="none"
+        img_gt = imfrompath(gt_path, float32=True, guide_data="none") #, guide_data="none"
         gd_path = self.paths[index]['gd_path']
         img_gd = imfrompath(gd_path, float32=True, guide_data=self.guide_data)
 
