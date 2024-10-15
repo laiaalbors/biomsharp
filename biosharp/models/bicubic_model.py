@@ -125,10 +125,10 @@ class BicubicModel(SRModel):
                 self.process()
 
             visuals = self.get_current_visuals()
-            sr_img = tensor2img([visuals['result']])
+            sr_img = tensor2img([visuals['result']], out_type=np.uint16)
             metric_data['img'] = sr_img
             if 'gt' in visuals:
-                gt_img = tensor2img([visuals['gt']])
+                gt_img = tensor2img([visuals['gt']], out_type=np.uint16)
                 metric_data['img2'] = gt_img
                 del self.gt
 
