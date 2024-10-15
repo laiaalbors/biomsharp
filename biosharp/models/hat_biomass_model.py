@@ -6,6 +6,7 @@ from basicsr.models.sr_model import SRModel
 from basicsr.utils import imwrite
 
 import math
+import numpy as np
 from tqdm import tqdm
 from os import path as osp
 
