@@ -5,6 +5,7 @@ checkpoints
 processed/
 wandb/
 tb_logger/
+experiments/
 
 
 # JetBrains PyCharm IDE
