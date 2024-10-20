@@ -13,7 +13,7 @@ from os import path as osp
 from collections import OrderedDict
 
 from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img
+from biosharp.utils import tensor2img, imwrite_rasterio
 
 
 @MODEL_REGISTRY.register()
@@ -220,7 +220,7 @@ class ReUseModel(SRModel):
                     else:
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
                                                  f'{img_name}_{self.opt["name"]}.png')
-                imwrite(sr_img, save_img_path)
+                imwrite_rasterio(sr_img, save_img_path)
 
             if with_metrics:
                 # calculate metrics

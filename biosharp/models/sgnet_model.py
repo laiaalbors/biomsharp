@@ -15,7 +15,7 @@ from basicsr.utils import imwrite, get_root_logger
 from basicsr.utils.registry import MODEL_REGISTRY
 
 from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img
+from biosharp.utils import tensor2img, imwrite_rasterio
 from biosharp.losses import build_other_loss
 
 
@@ -266,7 +266,7 @@ class SGNetModel(SRModel):
                     else:
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
                                                  f'{img_name}_{self.opt["name"]}.png')
-                imwrite(sr_img, save_img_path)
+                imwrite_rasterio(sr_img, save_img_path)
 
             if with_metrics:
                 # calculate metrics

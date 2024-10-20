@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 
@@ -6,6 +7,44 @@ import rasterio
 from rasterio.errors import NotGeoreferencedWarning
 
 warnings.filterwarnings("ignore", category=NotGeoreferencedWarning)
+
+
+def imwrite_rasterio(img, file_path, auto_mkdir=True, dtype='uint16'):
+    """Write image to file using rasterio, without geospatial metadata.
+
+    Args:
+        img (ndarray): Image array to be written (with values in the range 0-563).
+        file_path (str): Image file path.
+        auto_mkdir (bool): If the parent folder of `file_path` does not exist,
+            whether to create it automatically.
+        dtype (str): Data type for saving the image (default: 'uint16').
+
+    Raises:
+        IOError: If writing the image fails.
+    """
+    if auto_mkdir:
+        dir_name = os.path.abspath(os.path.dirname(file_path))
+        os.makedirs(dir_name, exist_ok=True)
+
+    # Ensure the image is 3D (for multi-band images)
+    if len(img.shape) == 2:  # Convert single-channel image to 3D
+        img = img[np.newaxis, ...]
+
+    # Define a minimal profile without CRS or transform
+    profile = {
+        'driver': 'GTiff',
+        'dtype': dtype,
+        'count': img.shape[0],  # Number of bands
+        'width': img.shape[2],
+        'height': img.shape[1],
+    }
+
+    try:
+        with rasterio.open(file_path, 'w', **profile) as dst:
+            for i in range(img.shape[0]):  # Write each band
+                dst.write(img[i, :, :], i + 1)
+    except Exception as e:
+        raise IOError(f'Failed in writing images: {e}')
 
 
 def tensor2img(tensor, rgb2bgr=False, out_type=np.uint8, min_max=(0, 1)):
