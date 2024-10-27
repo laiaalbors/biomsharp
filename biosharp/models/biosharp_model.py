@@ -32,18 +32,18 @@ class BIOSHARPModel(SRModel):
         # guide
         _, _, h_op, w_op = self.gd.size()
         self.mod_pad_h_op, self.mod_pad_w_op = self.mod_pad_h * h_op // h, self.mod_pad_w * w_op // w
-        self.gd = F.pad(self.gd, (0, self.mod_pad_w_op, 0, self.mod_pad_h_op), 'reflect')
+        self.img_gd = F.pad(self.gd, (0, self.mod_pad_w_op, 0, self.mod_pad_h_op), 'reflect')
 
     def process(self):
         # model inference
         if hasattr(self, 'net_g_ema'):
             self.net_g_ema.eval()
             with torch.no_grad():
-                self.output = self.net_g_ema(self.img, self.gd)
+                self.output = self.net_g_ema(self.img, self.img_gd)
         else:
             self.net_g.eval()
             with torch.no_grad():
-                self.output = self.net_g(self.img, self.gd)
+                self.output = self.net_g(self.img, self.img_gd)
             self.net_g.train()
 
     def tile_process(self):
@@ -52,7 +52,7 @@ class BIOSHARPModel(SRModel):
         Modified from: https://github.com/ata4/esrgan-launcher
         """
         batch, channel, height, width = self.img.shape # biomass
-        _, channel_optical, height_optical, width_optical = self.gd.shape # guide
+        _, channel_optical, height_optical, width_optical = self.img_gd.shape # guide
         scale_optical = self.scale #round(height_optical / height) # height_guide // height
         output_height = height * self.scale
         output_width = width * self.scale
@@ -86,7 +86,7 @@ class BIOSHARPModel(SRModel):
                 input_tile_height = input_end_y - input_start_y
                 tile_idx = y * tiles_x + x + 1
                 input_tile = self.img[:, :, input_start_y_pad:input_end_y_pad, input_start_x_pad:input_end_x_pad]
-                optical_tile = self.gd[:, :, input_start_y_pad*scale_optical:input_end_y_pad*scale_optical, input_start_x_pad*scale_optical:input_end_x_pad*scale_optical]
+                optical_tile = self.img_gd[:, :, input_start_y_pad*scale_optical:input_end_y_pad*scale_optical, input_start_x_pad*scale_optical:input_end_x_pad*scale_optical]
 
                 # upscale tile
                 try:
