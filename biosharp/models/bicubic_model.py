@@ -141,14 +141,14 @@ class BicubicModel(SRModel):
             if save_img:
                 if self.opt['is_train']:
                     save_img_path = osp.join(self.opt['path']['visualization'], img_name,
-                                             f'{img_name}_{current_iter}.png')
+                                             f'{img_name}_{current_iter}.tif')
                 else:
                     if self.opt['val']['suffix']:
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
-                                                 f'{img_name}_{self.opt["val"]["suffix"]}.png')
+                                                 f'{img_name}_{self.opt["val"]["suffix"]}.tif')
                     else:
                         save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
-                                                 f'{img_name}_{self.opt["name"]}.png')
+                                                 f'{img_name}_{self.opt["name"]}.tif')
                 imwrite(sr_img, save_img_path)
 
             if with_metrics:
