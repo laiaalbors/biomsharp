@@ -9,8 +9,8 @@ from biosharp.utils import imfrompath, img2tensor
 
 
 @DATASET_REGISTRY.register()
-class TripletImageDataset(data.Dataset):
-    """Triplet image dataset for image restoration.
+class TripletBiomassDataset(data.Dataset):
+    """Triplet biomass dataset for image restoration.
 
     Read LQ (Low Quality, e.g. LR (Low Resolution), blurry, noisy, etc), GD (guide) and GT image triplets.
 
@@ -40,7 +40,7 @@ class TripletImageDataset(data.Dataset):
     """
 
     def __init__(self, opt):
-        super(TripletImageDataset, self).__init__()
+        super(TripletBiomassDataset, self).__init__()
         self.opt = opt
         # file client (io backend)
         self.file_client = None
