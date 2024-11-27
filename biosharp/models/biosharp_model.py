@@ -242,3 +242,93 @@ class BIOSHARPModel(SRModel):
                 self._update_best_metric_result(dataset_name, metric, self.metric_results[metric], current_iter)
 
             self._log_validation_metric_values(current_iter, dataset_name, tb_logger)
+    
+
+    def global_validation(self, dataloader, current_iter, tb_logger, save_img):
+        dataset_name = dataloader.dataset.opt['name']
+        with_metrics = self.opt['val'].get('metrics') is not None
+        use_pbar = self.opt['val'].get('pbar', False)
+
+        if with_metrics:
+            if not hasattr(self, 'metric_results'):  # only execute in the first run
+                self.metric_results = {metric: 0 for metric in self.opt['val']['metrics'].keys()}
+            # initialize the best metric results for each dataset_name (supporting multiple validation datasets)
+            self._initialize_best_metric_results(dataset_name)
+        
+        # zero self.metric_results
+        if with_metrics:
+            self.metric_results = {metric: 0 for metric in self.metric_results}
+            self.sample_results = {metric: 0 for metric in self.metric_results}
+            self.results = {}
+        
+        metric_data = dict()
+        if use_pbar:
+            pbar = tqdm(total=len(dataloader), unit='image')
+
+        total = len(dataloader)
+        for idx, val_data in enumerate(dataloader):
+            print(f"    {idx + 1}/{total}", flush=True)
+
+            gd_path = val_data['gd_path'][0]
+            img_name = osp.splitext(osp.basename(val_data['lq_path'][0]))[0]
+            self.feed_data(val_data)
+
+            self.pre_process()
+            if 'tile' in self.opt:
+                self.tile_process()
+            else:
+                self.process()
+            self.post_process()
+
+            visuals = self.get_current_visuals()
+            sr_img = tensor2img([visuals['result']], out_type=np.uint16)
+            metric_data['img'] = sr_img
+            if 'gt' in visuals:
+                gt_img = tensor2img([visuals['gt']], out_type=np.uint16)
+                metric_data['img2'] = gt_img
+                del self.gt
+            
+            # tentative for out of GPU memory
+            del self.lq
+            del self.gd
+            del self.output
+            torch.cuda.empty_cache()
+
+            if save_img:
+                if self.opt['is_train']:
+                    save_img_path = osp.join(self.opt['path']['visualization'], img_name,
+                                             f'{img_name}_{current_iter}.tif')
+                else:
+                    if self.opt['val']['suffix']:
+                        save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
+                                                 f'{img_name}_{self.opt["val"]["suffix"]}.tif')
+                    else:
+                        save_img_path = osp.join(self.opt['path']['visualization'], dataset_name,
+                                                 f'{img_name}_{self.opt["name"]}.tif')
+                imwrite_rasterio(sr_img, save_img_path)
+
+            if with_metrics:
+                # calculate metrics
+                for name, opt_ in self.opt['val']['metrics'].items():
+                    metric_result = calculate_metric(metric_data, opt_)
+                    self.metric_results[name] += metric_result
+                    self.sample_results[name] = metric_result
+                self.results[gd_path] = self.sample_results
+                print(f"    {gd_path}: {self.sample_results}", flush=True)
+            
+            if use_pbar:
+                pbar.update(1)
+                pbar.set_description(f'Test {img_name}')
+        
+        if use_pbar:
+            pbar.close()
+
+        if with_metrics:
+            for metric in self.metric_results.keys():
+                self.metric_results[metric] /= (idx + 1)
+                # update the best metric result
+                self._update_best_metric_result(dataset_name, metric, self.metric_results[metric], current_iter)
+
+            self._log_validation_metric_values(current_iter, dataset_name, tb_logger)
+        
+        return self.results
