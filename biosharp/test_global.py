@@ -1,5 +1,6 @@
 import logging
 import torch
+import pandas as pd
 from os import path as osp
 
 import biosharp.archs
@@ -46,14 +47,15 @@ def test_global_pipeline(root_path):
         results = model.global_validation(test_loader, current_iter=opt['name'], tb_logger=None, save_img=opt['val']['save_img'])
         # save results in a CSV file
         csv_results = opt['val']['csv_results']
-        csv_results_filename = test_set_name + csv_results.split('/')[-1]
-        csv_results = csv_results.split('/')[:-1] + csv_results_filename
+        csv_results_filename = test_set_name + "_" + csv_results.split('/')[-1]
+        csv_results = "/".join(csv_results.split('/')[:-1]) + '/' + csv_results_filename
         df_results = pd.DataFrame.from_dict(results, orient='index')
         # Reset index to make the file path a column
         df_results.reset_index(inplace=True)
         df_results.rename(columns={'index': 'file_path'}, inplace=True)
         # Save the DataFrame to a CSV file
         df_results.to_csv(csv_results, index=False)
+        print(f"Evaluation saved in {csv_results}.")
 
 
 if __name__ == '__main__':
