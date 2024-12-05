@@ -22,6 +22,7 @@ class GlobalBiomassDataset(data.Dataset):
         satellite = opt['guide_data']
         first_row = opt['first_row'] if 'first_row' in opt else 0
         last_row = opt['last_row'] if 'last_row' in opt else None
+        self.guide_data = opt['guide_data'] # sentinel2 or landsat5
 
         # Validate the 'satellite' argument
         valid_satellites = {'landsat5', 'sentinel2'}
@@ -67,14 +68,29 @@ class GlobalBiomassDataset(data.Dataset):
         multispectral_25m = multispectral_img.rio.reproject_match(agb_25m)
         multispectral_25m = multispectral_25m.rio.reproject(dst_width=8960, dst_height=8960, resampling=Resampling.bilinear, dst_crs=multispectral_25m.rio.crs)
         
-        # Transformations
+        # Define min and max values for the different types of data
+        guide_ranges = {
+            "biomass": (0., 563.),
+            "sentinel2": (1., 10000.),
+            "landsat5": (0., 1.)
+        }
+        gd_min_value, gd_max_value = guide_ranges.get(self.guide_data, (None, None))
+        bio_min_value, bio_max_value = guide_ranges.get('biomass', (None, None))
+
+        # Transformations and normalizations
         gt = np.nan_to_num(agb_25m.values, copy=False, nan=-1.0).transpose(1, 2, 0)
         gt = img2tensor(gt, bgr2rgb=False, float32=True)
+        gt = np.clip(gt, a_min=bio_min_value, a_max=bio_max_value)
+        gt = (gt - bio_min_value) / (bio_max_value - bio_min_value)
         
         lq = np.nan_to_num(agb_100m.values, copy=False, nan=-1.0).transpose(1, 2, 0)
         lq = img2tensor(lq, bgr2rgb=False, float32=True)
+        lq = np.clip(lq, a_min=bio_min_value, a_max=bio_max_value)
+        lq = (lq - bio_min_value) / (bio_max_value - bio_min_value)
         
         gd = np.nan_to_num(multispectral_25m.values, copy=False, nan=-1.0).transpose(1, 2, 0)
         gd = img2tensor(gd, bgr2rgb=False, float32=True)
+        gd = np.clip(gd, a_min=gd_min_value, a_max=gd_max_value)
+        gd = (gd - gd_min_value) / (gd_max_value - gd_min_value)
         
         return {'idx': idx, 'lq': lq, 'gt': gt, 'gd': gd, 'lq_path': row["filename_100m"], 'gt_path': row["filename_25m"], 'gd_path': multispectral_path}
