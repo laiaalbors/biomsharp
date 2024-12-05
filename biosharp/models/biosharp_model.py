@@ -10,6 +10,7 @@ from torch.nn import functional as F
 from basicsr.models.sr_model import SRModel
 from basicsr.utils import imwrite
 from basicsr.utils.registry import MODEL_REGISTRY
+from basicsr.models import lr_scheduler as lr_scheduler
 
 from biosharp.metrics import calculate_metric
 from biosharp.utils import tensor2img, imwrite_rasterio
@@ -17,6 +18,22 @@ from biosharp.utils import tensor2img, imwrite_rasterio
 
 @MODEL_REGISTRY.register()
 class BIOSHARPModel(SRModel):
+    def setup_schedulers(self):
+        """Set up schedulers."""
+        train_opt = self.opt['train']
+        scheduler_type = train_opt['scheduler'].pop('type')
+        if scheduler_type in ['MultiStepLR', 'MultiStepRestartLR']:
+            for optimizer in self.optimizers:
+                self.schedulers.append(lr_scheduler.MultiStepRestartLR(optimizer, **train_opt['scheduler']))
+        elif scheduler_type == 'CosineAnnealingRestartLR':
+            for optimizer in self.optimizers:
+                self.schedulers.append(lr_scheduler.CosineAnnealingRestartLR(optimizer, **train_opt['scheduler']))
+        elif scheduler_type == 'ExponentialLR':
+            for optimizer in self.optimizers:
+                self.schedulers.append(torch.optim.lr_scheduler.ExponentialLR(optimizer, **train_opt['scheduler']))
+        else:
+            raise NotImplementedError(f'Scheduler {scheduler_type} is not implemented yet.')
+    
     def pre_process(self):
         # pad to multiplication of window_size
         window_size = self.opt['network_g']['window_size']
