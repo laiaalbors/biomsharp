@@ -330,7 +330,7 @@ class BIOSHARPModel(SRModel):
                     metric_result = calculate_metric(metric_data, opt_)
                     self.metric_results[name] += metric_result
                     self.sample_results[name] = metric_result
-                self.results[gd_path] = self.sample_results
+                self.results[gd_path] = self.sample_results.copy()
                 print(f"    {gd_path}: {self.sample_results}", flush=True)
             
             if use_pbar:
