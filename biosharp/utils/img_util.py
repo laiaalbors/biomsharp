@@ -174,7 +174,8 @@ def imfrompath(content_path, float32=True, guide_data="biomass"):
     
     if float32:
         if guide_data != "none":
-            img = np.clip(img, a_min=min_value, a_max=max_value)
+            if guide_data != "biomass":
+                img = np.clip(img, a_min=min_value, a_max=max_value)
             img = (img - min_value) / (max_value - min_value) # normalize values
         img = img.astype(np.float32)
         
