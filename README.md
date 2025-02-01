@@ -2,34 +2,98 @@
 
 ## Table of Contents
 - [Introduction](#introduction)
+- [Results](#results)
+  - [Performance Comparison of Models Using Sentinel-2 Bands](#performance-comparison-of-models-using-sentinel-2-bands)
+  - [Performance Comparison of Models Using Landsat-5 Bands](#performance-comparison-of-models-using-landsat-5-bands)
 - [Model Architecture](#model-architecture)
-- [Installation](#installation)
-- [Datasets](#datasets)
+- [Data Description](#data-description)
+  - [Input Data](#input-data)
+  - [Ground Truth](#ground-truth)
+  - [Data Preparation Steps](#data-preparation-steps)
+- [Installation Instructions](#installation-instructions)
+- [Usage Examples](#usage-examples)
+- [Citations](#citations)
 
+---
 
 ## Introduction
-The urgency of climate change emphasizes the need for precise global ecosystem monitoring, with accurate above-ground biomass (AGB) estimation playing a key role in understanding carbon dynamics. Recent advancements in satellite technology, such as ESA's Biomass Satellite and NASA's NISAR mission (set for 2024 launches), reflect global recognition of the importance of non-invasive, regular biomass assessments. These missions aim to offer critical global data on biomass, especially in remote areas, helping inform climate policies.
+Accurate estimation of above-ground biomass (AGB) is essential for understanding carbon stocks and flows that inform climate policies. Existing global satellite missions offer valuable environmental monitoring, but their lower spatial resolution limits their application in detailed local assessments.
 
-However, while global satellites provide broad environmental assessments, they lack the fine detail needed for local interventions. BioSHARP addresses this gap by leveraging Deep Learning to enhance low-resolution biomass data, integrating it with high-resolution multispectral Sentinel-2 data. This approach generates 25-meter resolution AGB maps from 100-meter data, offering valuable insights for both global and local assessments. By refining biomass data, BioSHARP supports more accurate, actionable strategies for mitigating climate change globally.
+This repository contains the official implementation of the paper **"BioSHARP: Biomass Super-resolution for High Accuracy Prediction"**. BioSHARP is a deep learning model designed to enhance coarse-resolution biomass data from satellite missions, such as ESA's Biomass and NASA's NISAR satellites, by fusing it with high-resolution multispectral data from sensors like Sentinel-2 or Landsat-5. BioSHARP achieves an output resolution of 25 meters, a fourfold improvement over the original 100-meter resolution.
 
+By bridging the scale gap between global satellite monitoring and local environmental management, BioSHARP demonstrates superior performance across multiple metrics and outperforms state-of-the-art methods.
 
-| **Model**                    | **opt** | **bio** | **Params (↓)** | **PSNR (↑)**        | **SSIM (↑)**       | **MSE (↓)**          | **RMSE (↓)**       | **MAE (↓)**        |
-|------------------------------|---------|---------|----------------|---------------------|--------------------|----------------------|--------------------|--------------------|
-| Bicubic                      |         | ✓       | -              | 17.25               | 0.36               | 1520.01              | 37.01              | 25.66              |
-| [ReUse](https://github.com/priamus-lab/ReUse) | ✓       |         | 4.9 M          | 21.86 (0.28)        | 0.54 (0.01)        | 524.24 (30.66)      | 21.80 (0.66)       | 14.63 (0.48)       |
-| [HAT-S](https://github.com/XPixelGroup/HAT) |         | ✓       | 9.6 M          | 21.91 (0.04)        | 0.50 (0.00)        | 494.33 (3.34)       | 21.36 (0.07)       | 14.13 (0.06)       |
-| [SGNet](https://github.com/yanzq95/SGNet) | ✓       | ✓       | 4.2 M          | 24.06 (0.09)        | 0.63 (0.01)        | 314.75 (7.97)       | 16.85 (0.19)       | 10.98 (0.13)       |
-| **BioSHARP (ours)**           | ✓       | ✓       | **3.4 M**      | **24.10** (0.05)    | **0.64** (0.00)    | **308.57** (2.63)    | **16.74** (0.08)    | **10.79** (0.07)    |
+📄 You can find the full paper [here](https://arxiv.org/abs/example).
 
+---
 
+## Results
+### Performance Comparison of Models Using Sentinel-2 Bands
+| **Model**                                        | **opt** | **bio** | **Params (↓)** | **PSNR (↑)** | **SSIM (↑)** | **MSE (↓)**    | **RMSE (↓)** | **MAE (↓)**  |
+|--------------------------------------------------|---------|---------|----------------|--------------|--------------|----------------|--------------|--------------|
+| Bicubic                                          |         | ✔       | -              | 17.25        | 0.36         | 7404.83        | 81.68        | 56.65        |
+| [HAT-S](https://github.com/XPixelGroup/HAT)      |         | ✔       | 9.6M           | 21.61        | 0.49         | 2531.54        | 48.58        | 32.11        |
+| [ReUse](https://github.com/priamus-lab/ReUse)    | ✔       |         | 1.2M           | 23.07        | 0.60         | 1952.91        | 41.82        | 27.09        |
+| ReUse*                                           | ✔       |         | 4.9M           | 23.20        | 0.61         | 1895.39        | 41.19        | 26.60        |
+| [SGNet](https://github.com/yanzq95/SGNet)        | ✔       | ✔       | 9.2M           | 24.42        | 0.66         | 1400.91        | 35.64        | 22.79        |
+| **BioSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **24.90**    | **0.70**     | **1254.24**    | **33.70**    | **21.02**    |
+
+### Performance Comparison of Models Using Landsat-5 Bands
+| **Model**                                        | **opt** | **bio** | **Params (↓)** | **PSNR (↑)** | **SSIM (↑)** | **MSE (↓)**    | **RMSE (↓)** | **MAE (↓)**  |
+|--------------------------------------------------|---------|---------|----------------|--------------|--------------|----------------|--------------|--------------|
+| Bicubic                                          |         | ✔       | -              | 17.25        | 0.36         | 7404.83        | 81.68        | 56.65        |
+| [HAT-S](https://github.com/XPixelGroup/HAT)      |         | ✔       | 9.6M           | 21.61        | 0.49         | 2531.54        | 48.58        | 32.11        |
+| [ReUse](https://github.com/priamus-lab/ReUse)    | ✔       |         | 1.2M           | 23.44        | 0.62         | 1820.05        | 40.24        | 26.27        |
+| ReUse*                                           | ✔       |         | 4.9M           | 23.60        | 0.63         | 1755.12        | 39.50        | 25.70        |
+| [SGNet](https://github.com/yanzq95/SGNet)        | ✔       | ✔       | 9.2M           | 24.80        | 0.69         | 1280.10        | 34.09        | 21.68        |
+| **BioSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **25.14**    | **0.71**     | **1194.81**    | **32.84**    | **20.45**    |
+
+---
 
 ## Model Architecture
-![Model Architecture](figures/biosharp_bigger.png)  
+BioSHARP combines high-resolution multispectral data with low-resolution biomass data through a guided super-resolution approach. The architecture consists of the following components:
 
-HAT's Deep Feature Extractor from [here](https://arxiv.org/abs/2205.04437):
-![Model Architecture](figures/hat_layers.png)  
+![Model Architecture](figures/biosharp_architecture.jpg)  
 
-## Installation
+HAT's RHAG module from [here](https://arxiv.org/abs/2205.04437):
+![RHAG Module Architecture](figures/hat_rhag_module.jpg)
+
+---
+
+## Data Description
+
+### Input Data
+- **High-Resolution Multispectral Data:**
+  - **Sentinel-2:** 10-20m resolution bands.
+  - **Landsat-5:** 30m resolution bands.
+
+- **Low-Resolution Biomass Data:**  
+  To train BioSHARP, we use the [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e). In the future, the intention is to leverage biomass data from the following satellite missions after their planned launches in 2025:
+  - **ESA's Biomass Satellite**
+  - **NASA's NISAR Satellite**
+
+### Ground Truth
+We utilize high-resolution biomass data as ground truth for model training and validation. These datasets are sourced from the following repositories:
+- **Eurasia:** [DOI](https://doi.org/10.5281/zenodo.7540824)
+- **Africa:** [DOI](https://doi.org/10.5281/zenodo.4725667)
+- **North America (North):** [DOI](https://doi.org/10.5281/zenodo.7550809)
+- **North America (South):** [DOI](https://doi.org/10.5281/zenodo.7550246)
+- **South America (North):** [DOI](https://zenodo.org/records/7544238)
+- **South America (South):** [DOI](https://doi.org/10.5281/zenodo.8334607)
+- **North Asia (North):** [DOI](https://doi.org/10.5281/zenodo.7584224)
+- **North Asia (South):** [DOI](https://doi.org/10.5281/zenodo.7584753)
+- **South Asia:** [DOI](https://doi.org/10.5281/zenodo.7545054)
+
+### Data Preparation Steps
+The code required for data preparation can be found in the `data_preparation` folder. It includes:
+1. Scripts to download **High-Resolution Multispectral Data** from **Google Earth Engine (GEE)**.
+2. Tools to divide large geographic regions into smaller subimages suitable for model processing.
+
+This preparation ensures the data is compatible with the input requirements of BioSHARP.
+
+---
+
+## Installation Instructions
 To set up the environment for BioSHARP, you'll need the following dependencies:
 
 - CUDA: 11.8
@@ -37,7 +101,7 @@ To set up the environment for BioSHARP, you'll need the following dependencies:
 - Python: 3.8.18
 - Conda: 22.9.0
 
-You can create the environment using the provided `environment.yml` file by running:
+Run the following commands to create the environment:
 
 ```bash
 conda create -n biosharp python=3.8.18
@@ -46,53 +110,11 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install .
 ```
 
-## Datasets
-### High-resolution biomass
-- [Eurasia](https://doi.org/10.5281/zenodo.7540824) (images `N50E014_agb.tif`, `N50E012_agb.tif`, `N48E014_agb.tif`, and `N48E012_agb.tif` for the samller experiments on the AOI)
-- [Africa](https://doi.org/10.5281/zenodo.4725667)
-- [North America N](https://doi.org/10.5281/zenodo.7550809)
-- [North America S](https://doi.org/10.5281/zenodo.7550246)
-- [South America N](https://zenodo.org/records/7544238)
-- [South America S](https://doi.org/10.5281/zenodo.8334607)
-- [North Asia N](https://doi.org/10.5281/zenodo.7584224)
-- [North Asia S](https://doi.org/10.5281/zenodo.7584753)
-- [South Asia](https://doi.org/10.5281/zenodo.7545054)
+---
 
-### Low-resolution biomass
-For the low-resolution biomass data we utilized the data from 2010 from the dataset [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e) with a resolution of 100 meters. In particular, for the samller experiments on the AOI, we used the image `N50E010_ESACCI-BIOMASS-L4-AGB-MERGED-100m-2010-fv4.0.tif`.
+## Usage Examples
 
-### High-resolution multispectral data
-For the multispectral optical data, we utilized Google Earth Engine ([GEE](https://code.earthengine.google.com/)) to access Sentinel-2 satellite imagery from the years 2017-2019. However, for the particular case of the small experiments on the AOI, we only used data from 2017, since with this we already covered the AOI. For the smaller experiments in the AOI, you can use the following JAVA code to download the Sentinel-2 data from GEE:
+---
 
-```JAVA
-var S2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED");
-var RegionEurope = ee.Geometry.Rectangle([12.0, 46.000000000040004, 15.99999999996, 50.0]);
+## Citations
 
-var S2_Filtered = S2.filterBounds(RegionEurope)
-  .filterMetadata("CLOUDY_PIXEL_PERCENTAGE", "less_than", 50)
-  .filterDate('2017-01-01', '2017-12-31');
-print(S2_Filtered.size());
-
-// Apply a mask to filter out cloud and cloud shadow pixels.
-function S2_maskClouds(image) {
-  var scl = image.select('SCL');
-  var cloudMask = scl.neq(8).and(scl.neq(9));
-  return image.updateMask(cloudMask);
-}
-
-// Apply the cloud mask function to the image collection.
-var cloudMaskedCollection = S2_Filtered.map(S2_maskClouds);
-
-// Apply the median to combine the different images into a single one.
-var Median_Image = cloudMaskedCollection.median();
-
-// Export the resulting image.
-Export.image.toDrive({
-  image: Median_Image,
-  description: "Europe_Small_Sentinel2",
-  region: RegionEurope,
-  scale: 25,
-  crs: "EPSG:4326",
-  maxPixels: 318638868
-});
-```
