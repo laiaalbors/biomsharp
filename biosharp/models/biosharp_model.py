@@ -308,7 +308,7 @@ class BIOSHARPModel(SRModel):
                 del self.gt
             
             # tentative for out of GPU memory
-            del self.lq, self.gd, self.output
+            del self.lq, self.gd, self.output, visuals, self.img, self.img_gd
             if idx % 10 == 0:
                 torch.cuda.empty_cache()
 
@@ -333,6 +333,7 @@ class BIOSHARPModel(SRModel):
                     sample_results[name] = metric_result
                 # results[gd_path] = sample_results.copy()
                 print(f"    {gd_path}: {sample_results}", flush=True)
+            metric_data.clear()
             
             del sr_img
             if 'gt_img' in locals():
@@ -392,10 +393,8 @@ class BIOSHARPModel(SRModel):
             if 'gt' in visuals:
                 gt_img = tensor2img([visuals['gt']], out_type=np.uint16)
                 metric_data['img2'] = gt_img
-                del self.gt
             
             # tentative for out of GPU memory
-            del self.lq, self.gd, self.output
             if idx % 10 == 0:
                 torch.cuda.empty_cache()
 
