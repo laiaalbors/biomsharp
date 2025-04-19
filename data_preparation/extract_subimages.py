@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 import sys
+from functools import partial
 from multiprocessing import Pool
 from os import path as osp
 from tqdm import tqdm
@@ -53,7 +54,7 @@ def main():
     """
 
     opt = {}
-    opt['n_thread'] = 10
+    opt['n_thread'] = 5
     opt['compression_level'] = 3
 
     # HR images
@@ -115,35 +116,39 @@ def extract_subimages(opt):
 
 def interpolate_with_padding(cropped_img, nan_mask, index, img_name, padding_size=1):
     if np.any(nan_mask):
-        # Apply mirror padding to the image and the NaN mask
+        # Apply mirror padding
         padded_img = np.pad(cropped_img, ((padding_size, padding_size), (padding_size, padding_size), (0, 0)), mode='reflect')
         padded_nan_mask = np.pad(nan_mask, ((padding_size, padding_size), (padding_size, padding_size), (0, 0)), mode='reflect')
 
         # Create grid of indices
-        a, b = np.indices((padded_img.shape[0], padded_img.shape[1]))
+        a, b = np.indices(padded_img.shape[:2])
 
-        # Interpolate only for NaN values
         for band in range(padded_img.shape[2]):
-            valid_pixels = ~padded_nan_mask[:, :, band]  # Mask for valid pixels
+            valid_pixels = ~padded_nan_mask[:, :, band]
+            if not np.any(valid_pixels):
+                print(f"No valid pixels for band {band} in cropped_img {index} of {img_name}. Skipping interpolation.", flush=True)
+                continue
+
+            valid_coords = np.column_stack((a[valid_pixels], b[valid_pixels]))
+            values = padded_img[:, :, band][valid_pixels]
+
             padded_img[:, :, band] = griddata(
-                (a[valid_pixels], b[valid_pixels]),   # Coordinates of valid pixels
-                padded_img[:, :, band][valid_pixels],        # Values of valid pixels
-                (a, b),                               # Coordinates of all pixels
+                valid_coords,
+                values,
+                (a, b),
                 method='linear',
-                fill_value=0                     # Optionally keep border NaN if interpolation cannot fill them
+                fill_value=0
             )
-        
-        # Remove the padding after interpolation to return to original size
+
         cropped_img_filled = padded_img[padding_size:-padding_size, padding_size:-padding_size, :]
-        
-        has_zero = (cropped_img_filled == 0).any()
-        # has_nan = np.isnan(cropped_img_filled).any()
-        if has_zero:
-            print(f'Warning: NaN values still present in cropped_img {index} of {img_name}, put them to 0.', flush=True)
-    
+
+        if np.isnan(cropped_img_filled).any():
+            print(f"Warning: NaN values still present in cropped_img {index} of {img_name}. Filling with 0.", flush=True)
+            cropped_img_filled = np.nan_to_num(cropped_img_filled, nan=0)
+
         return cropped_img_filled
-    
     else:
+        print(f"No NaN values found in cropped_img {index} of {img_name}.", flush=True)
         return cropped_img
 
 
@@ -193,14 +198,20 @@ def worker(path, opt):
                 cropped_img = np.ascontiguousarray(cropped_img)
                 
                 #------ interpolate missing values -------
+                print(f"cropped_img: {cropped_img.shape}")
                 nan_mask = np.isnan(cropped_img)
+                print(f"nan_mask: {nan_mask.shape}")
                 cropped_img = interpolate_with_padding(cropped_img, nan_mask, index, img_name)
                 #-----------------------------------------
+
+                # Calcular la nova transformació
+                new_transform = dataset.transform * rasterio.Affine.translation(y, x)
                 
                 profile.update(
                     height=cropped_img.shape[0],
                     width=cropped_img.shape[1],
                     count=cropped_img.shape[2] if len(cropped_img.shape) == 3 else 1,
+                    transform=new_transform,  # Afegir la nova transformació
                     compress='lzw'
                 )
 
