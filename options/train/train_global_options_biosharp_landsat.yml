@@ -1,0 +1,166 @@
+# general settings
+name: train_global_iter3_BIOSHARP_l5.2_SRx4_100to25_seed33_7 #prova_biosharp_efficient_seed0
+model_type: BIOSHARPModel
+scale: 4
+num_gpu: 4 #auto
+find_unused_parameters: true
+manual_seed: 33
+
+tile: # use the tile mode for limited GPU memory when testing.
+  tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
+  tile_pad: 0
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: global-iter3-100-25m-train
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_25m_sub/train
+    dataroot_lq: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_100m_sub/train
+    dataroot_gd: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_landsat_B3_B4_B7_25m_sub/train  # 2010_sentinel_B5_B6_B7_B8A_25m_sub / 2010_sentinel_B11_B8_B2_B4_25m_sub / 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub / 2010_sentinel_Ball_25m_sub / 2010_sentinel_B8_B4_25m_sub
+    guide_data: landsat5
+    meta_info_file: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/biosharp/data/meta_info/meta_info_global-iter3-25m_GT.txt
+    io_backend:
+      type: disk
+
+    gt_size: 256 #256/64/128
+    use_hflip: true
+    use_rot: true
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 2
+    batch_size_per_gpu: 1 #4
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val_1:
+    name: global-iter3-100-25m-valid-mix
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_25m_sub/validation
+    dataroot_lq: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_100m_sub/validation
+    dataroot_gd: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_landsat_B3_B4_B7_25m_sub/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    guide_data: landsat5
+    io_backend:
+      type: disk
+  
+  val_2:
+    name: global-iter3-100-25m-valid-new
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_25m_sub/validation_2
+    dataroot_lq: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_100m_sub/validation_2
+    dataroot_gd: /mnt/gpid08/datasets/imagenet21k/biomass/global_train_patches/iter3/2010_landsat_B3_B4_B7_25m_sub/validation_2  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    guide_data: landsat5
+    io_backend:
+      type: disk
+
+  val_3:
+    name: europe-small-100-25m-valid
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/validation
+    dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/validation
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_landsat_B3_B4_B7_25m_sub_nonans/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    guide_data: landsat5
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: BIOSHARP
+  guide_channels: 3 #2/3/4/6/10
+  upscale: 4
+  in_chans: 1
+  img_size: 64
+  window_size: 16
+  compress_ratio: 24
+  squeeze_factor: 24
+  conv_scale: 0.01
+  overlap_ratio: 0.5
+  img_range: 1.
+  depths: [6, 6, 6, 6, 6]
+  embed_dim: 84
+  num_heads: [6, 6, 6, 6, 6]
+  mlp_ratio: 2
+  upsampler: 'pixelshuffle'
+  resi_connection: '1conv'
+
+# path
+path:
+  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/experiments/train_global_iter2_BIOSHARP_l5.2_SRx4_100to25_seed33_7/models/net_g_150000.pth #experiments/train_BIOSHARP_l5.2_SRx4_from_scratch_europe-small-100to25_seed33/models/net_g_340000.pth #~
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0.999
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4 #1e-4 / 1e-5
+    weight_decay: 0
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR
+    milestones: [100000, 125000, 150000, 175000] #[300000, 350000, 400000, 450000] #[125000, 200000, 225000, 240000]
+    gamma: 0.99 #0.5
+    # type: ExponentialLR
+    # gamma: 0.99999
+    
+
+  total_iter: 200000 #500000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: L1Loss
+    loss_weight: 1.0
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: !!float 5e3 #2e4
+  save_img: false
+  pbar: False
+
+  metrics:
+    psnr:
+      type: calculate_psnr_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    mse:
+      type: calculate_mse
+      crop_border: 4
+      test_y_channel: false
+      better: lower  # the lower, the better
+    rmse:
+      type: calculate_rmse
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+    mae:
+      type: calculate_mae
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+
+# logging settings
+logger:
+  print_freq: 500
+  save_checkpoint_freq: !!float 5e3 #2e4
+  use_tb_logger: true
+  wandb:
+    project: biosharp-experiments #~
+    resume_id: q5cgxym7 #~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
+

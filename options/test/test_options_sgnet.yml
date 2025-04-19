@@ -1,0 +1,70 @@
+# general settings
+name: test_SGNet_l2_SRx4_from_scratch_europe-small-100to25_seed33
+model_type: SGNetModel
+scale: 4
+num_gpu: auto
+manual_seed: 33
+
+tile: # use the tile mode for limited GPU memory when testing.
+  tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
+  tile_pad: 0
+
+# dataset and data loader settings
+datasets:
+  test_1:
+    name: europe-small-100-25m-valid
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/validation
+    dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/validation
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_landsat_Ball_25m_sub_nonans/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    guide_data: landsat5
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: SGNet
+  guide_channels: 6 #2/3/4/6/10
+  num_feats: 24
+  kernel_size: 3
+  scale: 4
+
+# path
+path:
+  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/experiments/train_SGNet_l2_SRx4_from_scratch_europe-small-100to25_seed33/models/net_g_200000.pth
+  strict_load_g: true
+  param_key_g: 'params'
+
+# validation settings
+val:
+  save_img: true    # true / false
+  suffix: ~         # add suffix to saved images, if None, use exp name
+  pbar: False
+
+  metrics:
+    psnr:
+      type: calculate_psnr_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    mse:
+      type: calculate_mse
+      crop_border: 4
+      test_y_channel: false
+      better: lower  # the lower, the better
+    rmse:
+      type: calculate_rmse
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+    mae:
+      type: calculate_mae
+      crop_border: 4
+      test_y_channel: false
+      better: lower

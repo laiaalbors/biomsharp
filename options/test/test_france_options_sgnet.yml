@@ -1,0 +1,69 @@
+# general settings
+name: test_france_SGNet_aoi_SRx4_100to25_seed124 #test_global_sense_model
+model_type: SGNetModel
+scale: 4
+num_gpu: auto
+#find_unused_parameters: true
+manual_seed: 124
+
+tile: # use the tile mode for limited GPU memory when testing.
+  tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
+  tile_pad: 0
+
+# dataset and data loader settings
+datasets:
+  test_1:
+    name: france_sentinel2
+    type: FranceBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/registrat/altres/FORMS-B_AGBD_30m_Mg_ha_continent_cropped_part.tif #/mnt/gpid08/datasets/biomassa/AGB_France_2020/2020_30m/FORMS-B_AGBD_30m_Mg_ha_island_cropped.tif
+    dataroot_lq: /mnt/gpid08/datasets/registrat/altres/FORMS-B_AGBD_100m_Mg_ha_continent_cropped_part.tif #/mnt/gpid08/datasets/biomassa/AGB_France_2020/2020_100m/FORMS-B_AGBD_100m_Mg_ha_island_cropped.tif
+    dataroot_gd: /mnt/gpid08/datasets/registrat/altres/france_s2_b4_b8_b12_gee_2020_25m_continent_cropped_part.tif #/mnt/gpid08/datasets/biomassa/AGB_France_2020/2020_sentinel_B4_B8_B12/france_s2_b4_b8_b12_gee_2020_25m_island_sentinel_cropped.tif
+    guide_data: sentinel2
+
+
+# network structures
+network_g:
+  type: SGNet
+  guide_channels: 3 #2/3/4/6/10
+  num_feats: 24
+  kernel_size: 3
+  scale: 4
+
+# path
+path:
+  pretrain_network_g: experiments/train_SGNet_s5.2_SRx4_from_scratch_europe-small-100to25_seed124/models/net_g_130000.pth #~
+  strict_load_g: true
+  param_key_g: 'params_ema'
+
+# validation settings
+val:
+  save_img: false
+  suffix: ~
+  pbar: False
+
+  metrics:
+    psnr:
+      type: calculate_psnr_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    mse:
+      type: calculate_mse
+      crop_border: 4
+      test_y_channel: false
+      better: lower  # the lower, the better
+    rmse:
+      type: calculate_rmse
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+    mae:
+      type: calculate_mae
+      crop_border: 4
+      test_y_channel: false
+      better: lower

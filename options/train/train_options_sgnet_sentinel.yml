@@ -1,0 +1,130 @@
+# general settings
+name: train_SGNet_s5.2_SRx4_from_scratch_europe-small-100to25_seed124
+model_type: SGNetModel
+scale: 4
+num_gpu: auto
+#find_unused_parameters: true
+manual_seed: 124
+
+tile: # use the tile mode for limited GPU memory when testing.
+  tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
+  tile_pad: 0
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: europe-small-100-25m-train
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/train
+    dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/train
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_B4_B8_B12_25m_sub_nonans/train  # 2010_sentinel_B5_B6_B7_B8A_25m_sub / 2010_sentinel_B11_B8_B2_B4_25m_sub / 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub / 2010_sentinel_Ball_25m_sub / 2010_sentinel_B8_B4_25m_sub
+    guide_data: sentinel2
+    meta_info_file: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/biosharp/data/meta_info/meta_info_europe-small-25m_GT.txt
+    io_backend:
+      type: disk
+
+    gt_size: 256 #256/64/128
+    use_hflip: true
+    use_rot: true
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 4 #6
+    batch_size_per_gpu: 4
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: europe-small-100-25m-valid
+    type: TripletBiomassDataset
+    dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/validation
+    dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/validation
+    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_sentinel_B4_B8_B12_25m_sub_nonans/validation  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
+    guide_data: sentinel2
+    io_backend:
+      type: disk
+
+
+# network structures
+network_g:
+  type: SGNet
+  guide_channels: 3 #2/3/4/6/10
+  num_feats: 24
+  kernel_size: 3
+  scale: 4
+
+# path
+path:
+  pretrain_network_g: ~
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  ema_decay: 0 #0.999
+  optim_g:
+    type: Adam
+    lr: !!float 1e-4
+    weight_decay: 0 # TODO: Investigar com afecta posar això a positiu i quin valor hauria de posar: 1e-4
+    betas: [0.9, 0.99]
+
+  scheduler:
+    type: MultiStepLR #MultiStepLR ExponentialLR
+    milestones: [40000, 80000, 120000] #[125000, 200000, 225000, 240000]
+    gamma: 0.2 #0.5
+
+  total_iter: 200000 #1000000
+  warmup_iter: -1  # no warm up
+
+  # losses
+  pixel_opt:
+    type: SGNetLoss
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: !!float 5e3 #1e4 #2e4
+  save_img: false
+  pbar: False
+
+  metrics:
+    psnr:
+      type: calculate_psnr_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    ssim:
+      type: calculate_ssim_biomass
+      crop_border: 4
+      test_y_channel: false
+      better: higher  # the higher, the better. Default: higher
+    mse:
+      type: calculate_mse
+      crop_border: 4
+      test_y_channel: false
+      better: lower  # the lower, the better
+    rmse:
+      type: calculate_rmse
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+    mae:
+      type: calculate_mae
+      crop_border: 4
+      test_y_channel: false
+      better: lower
+
+# logging settings
+logger:
+  print_freq: 200 #400
+  save_checkpoint_freq: !!float 5e3 #1e4 #2e4
+  use_tb_logger: true
+  wandb:
+    project: biosharp-experiments #~
+    resume_id: v9toof9k #~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
+
