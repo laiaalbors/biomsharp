@@ -15,8 +15,8 @@ from basicsr.utils import imwrite
 from basicsr.utils.registry import MODEL_REGISTRY
 from basicsr.models import lr_scheduler as lr_scheduler
 
-from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img, imwrite_rasterio, assign_georeference, img2tensor
+from biomsharp.metrics import calculate_metric
+from biomsharp.utils import tensor2img, imwrite_rasterio, assign_georeference, img2tensor
 
 
 @MODEL_REGISTRY.register()

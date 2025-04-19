@@ -32,7 +32,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/experiments/train_SGNet_l2_SRx4_from_scratch_europe-small-100to25_seed33/models/net_g_200000.pth
+  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biomsharp/experiments/train_SGNet_l2_SRx4_from_scratch_europe-small-100to25_seed33/models/net_g_200000.pth
   strict_load_g: true
   param_key_g: 'params'
 

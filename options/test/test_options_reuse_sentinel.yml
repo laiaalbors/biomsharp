@@ -31,7 +31,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/experiments/train_ReUse_s1_PRED_from_scratch_europe-small-100to25_seed33/models/net_g_45000.pth
+  pretrain_network_g: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biomsharp/experiments/train_ReUse_s1_PRED_from_scratch_europe-small-100to25_seed33/models/net_g_45000.pth
   strict_load_g: true
 
 # validation settings

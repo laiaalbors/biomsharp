@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from basicsr.utils.registry import LOSS_REGISTRY
 from basicsr.losses.loss_util import weighted_loss
 
-from biosharp.archs import get_Fre, Get_gradient_nopadding_d
+from biomsharp.archs import get_Fre, Get_gradient_nopadding_d
 
 
 @weighted_loss

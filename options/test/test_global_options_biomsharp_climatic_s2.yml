@@ -1,10 +1,10 @@
 # general settings
-name: test_train_BIOSHARP_l5.2_SRx4_from_scratch_europe-small-100to25_seed33
-model_type: BIOSHARPModel
+name: test_climatic_region_BIOMSHARP_sentinel_a2_SRx4_100to25_seed0 #test_global_sense_model
+model_type: BIOMSHARPModel
 scale: 4
 num_gpu: auto
 #find_unused_parameters: true
-manual_seed: 33
+manual_seed: 0
 
 tile: # use the tile mode for limited GPU memory when testing.
   tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
@@ -13,19 +13,17 @@ tile: # use the tile mode for limited GPU memory when testing.
 # dataset and data loader settings
 datasets:
   test_1:
-    name: europe-small-100-25m-train
-    type: TripletBiomassDataset
-    dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/train
-    dataroot_lq: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_100m_sub/train
-    dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_landsat_B3_B4_B7_25m_sub_nonans/train  # 2010_sentinel_B11_B8_B2_25m_sub / 2010_sentinel_25m_sub
-    guide_data: landsat5
-    io_backend:
-      type: disk
+    name: arid_sentinel2
+    type: GlobalBiomassDataset
+    csv_path: /mnt/gpid08/datasets/biomassa/equivalence_files/equivalence_AGB_25_100_new_new_sentinel_acceptats_with_climate_regions_warm_arid.csv #/mnt/gpid08/datasets/biomassa/equivalence_files/equivalence_AGB_25_100_new_new.csv
+    guide_data: sentinel2
+    first_row: 835
+    last_row: 840
 
 
 # network structures
 network_g:
-  type: BIOSHARP
+  type: BIOMSHARP
   guide_channels: 3 #2/3/4/6/10
   upscale: 4
   in_chans: 1
@@ -45,7 +43,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/train_BIOSHARP_l5.2_SRx4_from_scratch_europe-small-100to25_seed33/models/net_g_340000.pth #~
+  pretrain_network_g: experiments/train_climatic_region_BIOMSHARP_sentinel_a2_SRx4_100to25_seed0/models/net_g_95000.pth #~
   strict_load_g: true
   param_key_g: 'params_ema'
 
@@ -54,6 +52,7 @@ val:
   save_img: false
   suffix: ~
   pbar: False
+  csv_results: /mnt/gpid08/datasets/biomassa/global_a2_95000_evaluation_results_sentinel_arid_835_840.csv #/mnt/gpid08/datasets/biomassa/evaluation_results_100_vs_25.csv
 
   metrics:
     psnr:

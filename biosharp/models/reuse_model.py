@@ -12,8 +12,8 @@ from tqdm import tqdm
 from os import path as osp
 from collections import OrderedDict
 
-from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img, imwrite_rasterio
+from biomsharp.metrics import calculate_metric
+from biomsharp.utils import tensor2img, imwrite_rasterio
 
 
 @MODEL_REGISTRY.register()

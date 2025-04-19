@@ -3,9 +3,9 @@ import torch
 import pandas as pd
 from os import path as osp
 
-import biosharp.archs
-import biosharp.data
-import biosharp.models
+import biomsharp.archs
+import biomsharp.data
+import biomsharp.models
 
 from basicsr.data import build_dataloader, build_dataset
 from basicsr.models import build_model

@@ -12,7 +12,7 @@ from rasterio.enums import Resampling
 from rasterio.windows import Window, from_bounds
 from scipy.interpolate import griddata
 
-from biosharp.utils import img2tensor
+from biomsharp.utils import img2tensor
 from basicsr.utils.registry import DATASET_REGISTRY
 
 

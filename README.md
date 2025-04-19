@@ -1,4 +1,4 @@
-# BioSHARP: Biomass Super-resolution for High AccuRacy Prediction
+# BiomSHARP: Biomass Super-resolution for High AccuRacy Prediction
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -19,9 +19,9 @@
 ## Introduction
 Accurate estimation of above-ground biomass (AGB) is essential for understanding carbon stocks and flows that inform climate policies. Existing global satellite missions offer valuable environmental monitoring, but their lower spatial resolution limits their application in detailed local assessments.
 
-This repository contains the official implementation of the paper **"BioSHARP: Biomass Super-resolution for High Accuracy Prediction"**. BioSHARP is a deep learning model designed to enhance coarse-resolution biomass data from satellite missions, such as ESA's Biomass and NASA's NISAR satellites, by fusing it with high-resolution multispectral data from sensors like Sentinel-2 or Landsat-5. BioSHARP achieves an output resolution of 25 meters, a fourfold improvement over the original 100-meter resolution.
+This repository contains the official implementation of the paper **"BiomSHARP: Biomass Super-resolution for High Accuracy Prediction"**. BiomSHARP is a deep learning model designed to enhance coarse-resolution biomass data from satellite missions, such as ESA's Biomass and NASA's NISAR satellites, by fusing it with high-resolution multispectral data from sensors like Sentinel-2 or Landsat-5. BiomSHARP achieves an output resolution of 25 meters, a fourfold improvement over the original 100-meter resolution.
 
-By bridging the scale gap between global satellite monitoring and local environmental management, BioSHARP demonstrates superior performance across multiple metrics and outperforms state-of-the-art methods.
+By bridging the scale gap between global satellite monitoring and local environmental management, BiomSHARP demonstrates superior performance across multiple metrics and outperforms state-of-the-art methods.
 
 📄 You can find the full paper [here](https://arxiv.org/abs/example).
 
@@ -36,7 +36,7 @@ By bridging the scale gap between global satellite monitoring and local environm
 | [ReUse](https://github.com/priamus-lab/ReUse)    | ✔       |         | 1.2M           | 23.07        | 0.60         | 1952.91        | 41.82        | 27.09        |
 | ReUse*                                           | ✔       |         | 4.9M           | 23.20        | 0.61         | 1895.39        | 41.19        | 26.60        |
 | [SGNet](https://github.com/yanzq95/SGNet)        | ✔       | ✔       | 9.2M           | 24.42        | 0.66         | 1400.91        | 35.64        | 22.79        |
-| **BioSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **24.90**    | **0.70**     | **1254.24**    | **33.70**    | **21.02**    |
+| **BiomSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **24.90**    | **0.70**     | **1254.24**    | **33.70**    | **21.02**    |
 
 ### Performance Comparison of Models Using Landsat-5 Bands
 | **Model**                                        | **opt** | **bio** | **Params (↓)** | **PSNR (↑)** | **SSIM (↑)** | **MSE (↓)**    | **RMSE (↓)** | **MAE (↓)**  |
@@ -46,14 +46,14 @@ By bridging the scale gap between global satellite monitoring and local environm
 | [ReUse](https://github.com/priamus-lab/ReUse)    | ✔       |         | 1.2M           | 23.44        | 0.62         | 1820.05        | 40.24        | 26.27        |
 | ReUse*                                           | ✔       |         | 4.9M           | 23.60        | 0.63         | 1755.12        | 39.50        | 25.70        |
 | [SGNet](https://github.com/yanzq95/SGNet)        | ✔       | ✔       | 9.2M           | 24.80        | 0.69         | 1280.10        | 34.09        | 21.68        |
-| **BioSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **25.14**    | **0.71**     | **1194.81**    | **32.84**    | **20.45**    |
+| **BiomSHARP (ours)**                              | ✔       | ✔       | **3.4M**       | **25.14**    | **0.71**     | **1194.81**    | **32.84**    | **20.45**    |
 
 ---
 
 ## Model Architecture
-BioSHARP combines high-resolution multispectral data with low-resolution biomass data through a guided super-resolution approach. The architecture consists of the following components:
+BiomSHARP combines high-resolution multispectral data with low-resolution biomass data through a guided super-resolution approach. The architecture consists of the following components:
 
-![Model Architecture](figures/biosharp_architecture.jpg)  
+![Model Architecture](figures/biomsharp_architecture.jpg)  
 
 HAT's RHAG module from [here](https://arxiv.org/abs/2205.04437):
 ![RHAG Module Architecture](figures/hat_rhag_module.jpg)
@@ -68,7 +68,7 @@ HAT's RHAG module from [here](https://arxiv.org/abs/2205.04437):
   - **Landsat-5:** 30m resolution bands.
 
 - **Low-Resolution Biomass Data:**  
-  To train BioSHARP, we use the [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e). In the future, the intention is to leverage biomass data from the following satellite missions after their planned launches in 2025:
+  To train BiomSHARP, we use the [ESA Biomass Climate Change Initiative (Biomass_cci): Global datasets of forest above-ground biomass](https://catalogue.ceda.ac.uk/uuid/af60720c1e404a9e9d2c145d2b2ead4e). In the future, the intention is to leverage biomass data from the following satellite missions after their planned launches in 2025:
   - **ESA's Biomass Satellite**
   - **NASA's NISAR Satellite**
 
@@ -89,12 +89,12 @@ The code required for data preparation can be found in the `data_preparation` fo
 1. Scripts to download **High-Resolution Multispectral Data** from **Google Earth Engine (GEE)**.
 2. Tools to divide large geographic regions into smaller subimages suitable for model processing.
 
-This preparation ensures the data is compatible with the input requirements of BioSHARP.
+This preparation ensures the data is compatible with the input requirements of BiomSHARP.
 
 ---
 
 ## Installation Instructions
-To set up the environment for BioSHARP, you'll need the following dependencies:
+To set up the environment for BiomSHARP, you'll need the following dependencies:
 
 - CUDA: 11.8
 - cuDNN: 8.1
@@ -104,8 +104,8 @@ To set up the environment for BioSHARP, you'll need the following dependencies:
 Run the following commands to create the environment:
 
 ```bash
-conda create -n biosharp python=3.8.18
-conda activate biosharp
+conda create -n biomsharp python=3.8.18
+conda activate biomsharp
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install .
 ```
@@ -113,6 +113,18 @@ pip install .
 ---
 
 ## Usage Examples
+
+Train a model with 4 GPUs:
+
+```bash
+torchrun --nproc_per_node=4 --master_port=4540 biomsharp/train.py -opt options/train/train_options_biomsharp_landsat.yml --launcher pytorch --auto_resume
+```
+
+Test a model:
+
+```bash
+python biomsharp/test.py -opt options/test/test_options_biomsharp.yml
+```
 
 ---
 

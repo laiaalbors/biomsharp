@@ -4,8 +4,8 @@ from torchvision.transforms.functional import normalize
 from basicsr.utils import FileClient
 from basicsr.utils.registry import DATASET_REGISTRY
 
-from biosharp.data import augment, triplet_random_crop, triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
-from biosharp.utils import imfrompath, img2tensor
+from biomsharp.data import augment, triplet_random_crop, triple_paired_paths_from_lmdb, triple_paired_paths_from_meta_info_file, triple_paired_paths_from_folder
+from biomsharp.utils import imfrompath, img2tensor
 
 
 @DATASET_REGISTRY.register()

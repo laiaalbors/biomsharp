@@ -11,7 +11,7 @@ from basicsr.utils.registry import ARCH_REGISTRY
 
 
 @ARCH_REGISTRY.register()
-class BIOSHARP(nn.Module):
+class BIOMSHARP(nn.Module):
     def __init__(self,
                  guide_channels=3,
                  img_size=64,
@@ -40,7 +40,7 @@ class BIOSHARP(nn.Module):
                  upsampler='',
                  resi_connection='1conv',
                  **kwargs):
-        super(BIOSHARP, self).__init__()
+        super(BIOMSHARP, self).__init__()
         
         # initialize HAT
         self.hat = HAT(img_size, patch_size, in_chans, embed_dim, depths, num_heads, window_size, compress_ratio, squeeze_factor, conv_scale, overlap_ratio, mlp_ratio, qkv_bias, qk_scale, drop_rate, attn_drop_rate, drop_path_rate, norm_layer, ape, patch_norm, use_checkpoint, upscale, img_range, upsampler, resi_connection, **kwargs)

@@ -12,7 +12,7 @@ from rasterio.enums import Resampling
 from rasterio.windows import Window, from_bounds
 from scipy.interpolate import griddata
 
-from biosharp.utils import img2tensor
+from biomsharp.utils import img2tensor
 from basicsr.utils.registry import DATASET_REGISTRY
 
 
@@ -103,7 +103,7 @@ class FranceBiomassDataset(data.Dataset):
         agb_100m_w, agb_100m_h = agb_100m.shape[1:]
         # agb_res_x, agb_res_y = abs(agb_100m.rio.resolution()[0]), abs(agb_100m.rio.resolution()[1])
 
-        # BioSHARP: Create the Multispectral-25m raster
+        # BiomSHARP: Create the Multispectral-25m raster
         multispectral_25m = rioxarray.open_rasterio(self.gd_file)
         
         # Resamplejar multispectral_25m per tenir la 4 vegades més petita que agb_100m
@@ -149,7 +149,7 @@ class FranceBiomassDataset(data.Dataset):
         lq = img2tensor(lq, bgr2rgb=False, float32=True)
         lq = (lq - bio_min_value) / (bio_max_value - bio_min_value)
         
-        # BioSHARP
+        # BiomSHARP
         gd = np.nan_to_num(multispectral_25m, copy=False, nan=0).transpose(1, 2, 0)
         gd = img2tensor(gd, bgr2rgb=False, float32=True)
         gd = np.clip(gd, a_min=gd_min_value, a_max=gd_max_value)

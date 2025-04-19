@@ -17,9 +17,9 @@ from basicsr.models.sr_model import SRModel
 from basicsr.utils import imwrite, get_root_logger
 from basicsr.utils.registry import MODEL_REGISTRY
 
-from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img, imwrite_rasterio, assign_georeference, img2tensor
-from biosharp.losses import build_other_loss
+from biomsharp.metrics import calculate_metric
+from biomsharp.utils import tensor2img, imwrite_rasterio, assign_georeference, img2tensor
+from biomsharp.losses import build_other_loss
 
 
 @MODEL_REGISTRY.register()

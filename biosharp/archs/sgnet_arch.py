@@ -9,8 +9,8 @@ from torchvision import transforms
 
 from basicsr.utils.registry import ARCH_REGISTRY
 
-from biosharp.utils import pixels as thops_pixels
-from biosharp.utils import sum as thops_sum
+from biomsharp.utils import pixels as thops_pixels
+from biomsharp.utils import sum as thops_sum
 
 
 """

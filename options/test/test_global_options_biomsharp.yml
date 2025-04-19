@@ -1,10 +1,10 @@
 # general settings
-name: test_climatic_region_BIOSHARP_G1_SRx4_100to25_seed0 #test_global_sense_model
-model_type: BIOSHARPModel
+name: test_global_bicubic #test_global_iter0_350000_BIOMSHARP_s5.2_SRx4_from_scratch_europe-small-100to25_seed543_exp #test_global_sense_model
+model_type: BIOMSHARPModel
 scale: 4
 num_gpu: auto
 #find_unused_parameters: true
-manual_seed: 0
+manual_seed: 543
 
 tile: # use the tile mode for limited GPU memory when testing.
   tile_size: 64 # the higher, the more utilized GPU memory and the less performance change against the full image. must be an integer multiple of the window size.
@@ -13,17 +13,17 @@ tile: # use the tile mode for limited GPU memory when testing.
 # dataset and data loader settings
 datasets:
   test_1:
-    name: warm_temperate_landsat5
+    name: global_landsat5
     type: GlobalBiomassDataset
-    csv_path: /mnt/gpid08/datasets/biomassa/equivalence_files/equivalence_AGB_25_100_new_new_landsat_acceptats_with_climate_regions_warm_temperate.csv #/mnt/gpid08/datasets/biomassa/equivalence_files/equivalence_AGB_25_100_new_new.csv
+    csv_path: /mnt/gpid08/datasets/biomassa/equivalence_files/equivalence_AGB_25_100_new_new.csv
     guide_data: landsat5
-    first_row: 593
-    last_row: 600
+    first_row: 3402
+    last_row: 3432
 
 
 # network structures
 network_g:
-  type: BIOSHARP
+  type: BIOMSHARP
   guide_channels: 3 #2/3/4/6/10
   upscale: 4
   in_chans: 1
@@ -43,7 +43,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/train_global_BIOSHARP_G1_SRx4_from_scratch_landsat_100to25_seed0/models/net_g_160000.pth #experiments/train_climatic_region_BIOSHARP_p3_SRx4_100to25_seed0/models/net_g_105000.pth #~
+  pretrain_network_g: experiments/train_BIOMSHARP_s5.2_SRx4_from_scratch_europe-small-100to25_seed543_exp/models/net_g_350000.pth #experiments/train_global_iter3_BIOMSHARP_l5.2_SRx4_100to25_seed33_7/models/net_g_200000.pth #~
   strict_load_g: true
   param_key_g: 'params_ema'
 
@@ -52,7 +52,7 @@ val:
   save_img: false
   suffix: ~
   pbar: False
-  csv_results: /mnt/gpid08/datasets/biomassa/global_G1_160000_evaluation_results_landsat_warm_temperate_593_600.csv #/mnt/gpid08/datasets/biomassa/evaluation_results_100_vs_25.csv
+  csv_results: /mnt/gpid08/datasets/biomassa/global_bicubic_evaluation_results_3402_3432.csv #/mnt/gpid08/datasets/biomassa/evaluation_results_100_vs_25.csv
 
   metrics:
     psnr:

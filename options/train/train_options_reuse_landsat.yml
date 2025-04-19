@@ -18,7 +18,7 @@ datasets:
     dataroot_gt: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_25m_sub/train
     dataroot_gd: /mnt/gpid08/datasets/biomassa/europe-small/patches1920x1920/2010_landsat_Ball_25m_sub_nonans/train  # 2010_landsat_B5_B6_B7_B8A_25m_sub / 2010_landsat_B11_B8_B2_B4_25m_sub / 2010_landsat_B11_B8_B2_25m_sub / 2010_landsat_25m_sub / 2010_landsat_Ball_25m_sub / 2010_landsat_B8_B4_25m_sub
     guide_data: landsat5
-    meta_info_file: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biosharp/biosharp/data/meta_info/meta_info_europe-small-25m_GT.txt
+    meta_info_file: /home/usuaris/imatge/laia.albors/TASKS/GlobalBiomass/repos/biomsharp/biomsharp/data/meta_info/meta_info_europe-small-25m_GT.txt
     io_backend:
       type: disk
 
@@ -117,7 +117,7 @@ logger:
   save_checkpoint_freq: !!float 1000 #1e4 #2e4
   use_tb_logger: true
   wandb:
-    project: biosharp-experiments #~
+    project: biomsharp-experiments #~
     resume_id: v0l6v7s0 #~
 
 # dist training settings

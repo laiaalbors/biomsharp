@@ -10,8 +10,8 @@ import numpy as np
 from tqdm import tqdm
 from os import path as osp
 
-from biosharp.metrics import calculate_metric
-from biosharp.utils import tensor2img
+from biomsharp.metrics import calculate_metric
+from biomsharp.utils import tensor2img
 
 
 @MODEL_REGISTRY.register()

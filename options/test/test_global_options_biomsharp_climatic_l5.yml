@@ -1,6 +1,6 @@
 # general settings
-name: test_climatic_region_BIOSHARP_landsat_e2_SRx4_100to25_seed33 #test_global_sense_model
-model_type: BIOSHARPModel
+name: test_climatic_region_BIOMSHARP_landsat_e2_SRx4_100to25_seed33 #test_global_sense_model
+model_type: BIOMSHARPModel
 scale: 4
 num_gpu: auto
 #find_unused_parameters: true
@@ -23,7 +23,7 @@ datasets:
 
 # network structures
 network_g:
-  type: BIOSHARP
+  type: BIOMSHARP
   guide_channels: 3 #2/3/4/6/10
   upscale: 4
   in_chans: 1
@@ -43,7 +43,7 @@ network_g:
 
 # path
 path:
-  pretrain_network_g: experiments/train_climatic_region_BIOSHARP_e2_SRx4_100to25_seed33/models/net_g_320000.pth #~
+  pretrain_network_g: experiments/train_climatic_region_BIOMSHARP_e2_SRx4_100to25_seed33/models/net_g_320000.pth #~
   strict_load_g: true
   param_key_g: 'params_ema'
 

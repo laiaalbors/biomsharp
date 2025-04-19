@@ -3,9 +3,9 @@ import torch
 import pandas as pd
 from os import path as osp
 
-import biosharp.archs
-import biosharp.data
-import biosharp.models
+import biomsharp.archs
+import biomsharp.data
+import biomsharp.models
 
 from basicsr.data import build_dataloader, build_dataset
 from basicsr.models import build_model
@@ -44,11 +44,6 @@ def test_france_pipeline(root_path):
     for test_loader in test_loaders:
         test_set_name = test_loader.dataset.opt['name']
         logger.info(f'Testing {test_set_name}...')
-        # Baseline
-        # print("\nBaseline:")
-        # model.france_validation_baseline(test_loader, current_iter=opt['name'], tb_logger=None, save_img=opt['val']['save_img'])
-        # BioSHARP / SGNet
-        print("\nBioSHARP / SGNet:")
         model.france_validation(test_loader, current_iter=opt['name'], tb_logger=None, save_img=opt['val']['save_img'])
         print(f"Evaluation done.")
 

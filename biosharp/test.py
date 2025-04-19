@@ -1,8 +1,8 @@
 import os.path as osp
 
-import biosharp.archs
-import biosharp.data
-import biosharp.models
+import biomsharp.archs
+import biomsharp.data
+import biomsharp.models
 from basicsr.test import test_pipeline
 
 if __name__ == '__main__':

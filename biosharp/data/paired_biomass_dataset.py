@@ -7,8 +7,8 @@ from basicsr.utils import FileClient
 from basicsr.utils.matlab_functions import rgb2ycbcr
 from basicsr.utils.registry import DATASET_REGISTRY
 
-from biosharp.utils import imfrompath, img2tensor
-from biosharp.data import augment, random_crop_img
+from biomsharp.utils import imfrompath, img2tensor
+from biomsharp.data import augment, random_crop_img
 
 
 """
