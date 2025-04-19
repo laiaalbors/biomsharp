@@ -12,7 +12,6 @@
   - [Data Preparation Steps](#data-preparation-steps)
 - [Installation Instructions](#installation-instructions)
 - [Usage Examples](#usage-examples)
-- [Citations](#citations)
 
 ---
 
@@ -125,8 +124,4 @@ Test a model:
 ```bash
 python biomsharp/test.py -opt options/test/test_options_biomsharp.yml
 ```
-
----
-
-## Citations
 
