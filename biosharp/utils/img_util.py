@@ -2,11 +2,45 @@ import os
 import torch
 import numpy as np
 
+from affine import Affine
+from rasterio.crs import CRS
+
 import warnings
 import rasterio
+import rioxarray
+import xarray as xr
 from rasterio.errors import NotGeoreferencedWarning
 
 warnings.filterwarnings("ignore", category=NotGeoreferencedWarning)
+
+
+def assign_georeference(output, properties):
+    transform = Affine.from_gdal(*(float(x) for x in properties['transform']))
+    crs = CRS.from_string(properties['crs'][0])
+    width, height = properties['width'][0], properties['height'][0]
+
+    x_coords = np.linspace(float(transform.c),
+                       float(transform.c + transform.a * (width - 1)),
+                       int(width)).flatten()
+    y_coords = np.linspace(float(transform.f),
+                        float(transform.f + transform.e * (height - 1)),
+                        int(height)).flatten()
+
+    output_rioxarray = xr.DataArray(
+        output,
+        dims=("band", "y", "x"),
+        coords={
+            "band": np.arange(1, output.shape[0] + 1),
+            "x": (["x"], x_coords),
+            "y": (["y"], y_coords),
+        }
+    )
+
+    # Write the transform and CRS
+    output_rioxarray.rio.write_transform(transform, inplace=True)
+    output_rioxarray.rio.write_crs(crs, inplace=True)
+    
+    return output_rioxarray
 
 
 def imwrite_rasterio(img, file_path, auto_mkdir=True, dtype='uint16'):
