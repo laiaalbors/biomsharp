@@ -23,7 +23,7 @@ This repository contains the official implementation of the paper **"BiomSHARP: 
 
 By bridging the scale gap between global satellite monitoring and local environmental management, BiomSHARP demonstrates superior performance across multiple metrics and outperforms state-of-the-art methods.
 
-📄 You can find the full paper [here](https://arxiv.org/abs/example).
+📄 You can find the full paper [here](https://ieeexplore.ieee.org/document/11265727).
 
 ---
 
