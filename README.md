@@ -12,6 +12,7 @@
   - [Data Preparation Steps](#data-preparation-steps)
 - [Installation Instructions](#installation-instructions)
 - [Usage Examples](#usage-examples)
+- [Citation](#citation)
 
 ---
 
@@ -125,3 +126,20 @@ Test a model:
 python biomsharp/test.py -opt options/test/test_options_biomsharp.yml
 ```
 
+---
+
+## Citation
+
+```latex
+@ARTICLE{11265727,
+  author={Albors, Laia and Marcello, Javier and Marqués, Ferran},
+  journal={IEEE Transactions on Geoscience and Remote Sensing}, 
+  title={BiomSHARP: Biomass Super-Resolution for High Accuracy Prediction}, 
+  year={2025},
+  volume={63},
+  number={},
+  pages={1-18},
+  keywords={Biomass;Superresolution;Estimation;Data models;Satellites;Biological system modeling;Accuracy;Meters;Deep learning;Forestry;Above-ground biomass (AGB);biomass super-resolution for high accuracy prediction (BiomSHARP);climate monitoring;deep learning (DL);guided biomass super-resolution (SR);multispectral imagery;remote sensing (RS);satellite biomass estimation},
+  doi={10.1109/TGRS.2025.3636434}
+}
+```
